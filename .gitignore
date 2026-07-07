@@ -1,5 +1,5 @@
 */_version.py
-data/temp.nc
+data/*.nc
 
 
 logs/*log
