@@ -1,17 +1,17 @@
-# template-project
+# ek80adcp
 
 > 🧪 A modern Python template for scientific projects — with clean code, automated tests, documentation, citation, and publication tools, ready out-of-the-box.
 
 This repository is designed to help researchers and developers (especially in the [UHH Experimental Oceanography group](http://eleanorfrajka.com) quickly launch well-structured Python projects with consistent tooling for open science.
 
 📘 Full documentation available at:  
-👉 https://eleanorfrajka.github.io/template-project/
+👉 https://eleanorfrajka.github.io/ek80adcp/
 
 ---
 
 ## 🚀 What's Included
 
-- ✅ Example Python package layout: `template_project/*.py`
+- ✅ Example Python package layout: `ek80adcp/*.py`
 - 📓 Jupyter notebook demo: `notebooks/demo.ipynb`
 - 📄 Markdown and Sphinx-based documentation in `docs/`
 - 🔍 Tests with `pytest` in `tests/`, CI with GitHub Actions
@@ -24,11 +24,11 @@ This repository is designed to help researchers and developers (especially in th
 ## Project Structure
 
 ```
-template-project/
+ek80adcp/
 ├── .github/workflows/          # CI/CD for tests, docs, PyPI
 ├── docs/                       # Sphinx documentation  
 ├── notebooks/                  # Example Jupyter notebooks
-├── template_project/           # Main Python package
+├── ek80adcp/           # Main Python package
 │   ├── tools.py
 │   ├── readers.py  
 │   ├── plotters.py
@@ -58,12 +58,12 @@ template-project/
 Install in development mode:
 
 ```bash
-git clone https://github.com/eleanorfrajka/template-project.git
-cd template-project
+git clone https://github.com/eleanorfrajka/ek80adcp.git
+cd ek80adcp
 
 # Option A: Using conda/mamba (recommended)
 conda env create -f environment.yml
-conda activate template-project
+conda activate ek80adcp
 pip install -e .
 
 # Option B: Using pip
@@ -87,17 +87,17 @@ make html
 
 ## 📚 Learn More
 
-- [Setup instructions](https://eleanorfrajka.github.io/template-project/setup.html)
-- [Solo Git workflow](https://eleanorfrajka.github.io/template-project/gitworkflow_solo.html)
-- [Fork-based collaboration](https://eleanorfrajka.github.io/template-project/gitcollab_v2.html)
-- [Building docs](https://eleanorfrajka.github.io/template-project/build_docs.html)
-- [Publishing to PyPI](https://eleanorfrajka.github.io/template-project/pypi_guide.html)
+- [Setup instructions](https://eleanorfrajka.github.io/ek80adcp/setup.html)
+- [Solo Git workflow](https://eleanorfrajka.github.io/ek80adcp/gitworkflow_solo.html)
+- [Fork-based collaboration](https://eleanorfrajka.github.io/ek80adcp/gitcollab_v2.html)
+- [Building docs](https://eleanorfrajka.github.io/ek80adcp/build_docs.html)
+- [Publishing to PyPI](https://eleanorfrajka.github.io/ek80adcp/pypi_guide.html)
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome!  Please also consider adding an [issue](https://github.com/eleanorfrajka/template-project/issues) when something isn't clear.
+Contributions are welcome!  Please also consider adding an [issue](https://github.com/eleanorfrajka/ek80adcp/issues) when something isn't clear.
 
 See the [customisation checklist](customisation_checklist.md) to adapt this template to your own project.
 

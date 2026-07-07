@@ -29,7 +29,7 @@ authors:
 version: 0.1.0
 date-released: 2024-06-01
 license: MIT
-url: https://github.com/eleanorfrajka/template-project
+url: https://github.com/eleanorfrajka/ek80adcp
 message: "If you use this template in your own work, please cite it using the metadata above."
 ```
 

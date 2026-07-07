@@ -17,7 +17,7 @@ year = datetime.datetime.now(tz=datetime.UTC).date().year
 # print(sys.path)
 
 # General information about the project.
-project = "template_project"
+project = "ek80adcp"
 author = "Eleanor Frajka-Williams, FirstName LastName"
 copyright = f"{year}, {author}"
 release = "v0.0.0"
@@ -37,7 +37,7 @@ extensions = [
 # Configure nbsphinx for example notebooks
 # Allow errors in notebooks (useful for template examples)
 nbsphinx_allow_errors = True
-nbsphinx_execute = "auto"
+nbsphinx_execute = "never"
 nbsphinx_kernel_name = "python3"
 
 # Intersphinx mapping for cross-references

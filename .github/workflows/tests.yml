@@ -5,7 +5,7 @@ on:
     branches: [ "main" ]
     paths:
       - '**.py'
-      - 'template_project/**'
+      - 'ek80adcp/**'
       - 'tests/**'
       - 'pyproject.toml'
       - 'requirements*.txt'
@@ -14,7 +14,7 @@ on:
     branches: [ "main" ]
     paths:
       - '**.py'
-      - 'template_project/**'
+      - 'ek80adcp/**'
       - 'tests/**'
       - 'pyproject.toml'
       - 'requirements*.txt'

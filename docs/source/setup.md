@@ -15,11 +15,11 @@ You're making a fresh project based on this template.
 #### a. Clone the repository to your computer
 From a **terminal**:
 ```bash
-git clone https://github.com/eleanorfrajka/template-project
+git clone https://github.com/eleanorfrajka/ek80adcp
 ```
 
 Or in your **browser**:
-1. Navigate to [https://github.com/eleanorfrajka/template-project](https://github.com/eleanorfrajka/template-project)
+1. Navigate to [https://github.com/eleanorfrajka/ek80adcp](https://github.com/eleanorfrajka/ek80adcp)
 2. Click the green `<> Code` button.
 3. Choose **Open with GitHub Desktop**.
 
@@ -33,7 +33,7 @@ git push -u origin main
 ```
 
 ### Option B: Contribute to someone else's project
-See [Git Collaboration](gitcollab.md) for full instructions on forking and branching when contributing to another repository.
+See the GitHub documentation for full instructions on forking and branching when contributing to another repository.
 
 ---
 
@@ -48,15 +48,15 @@ If you're using conda-based environment management, create an environment from t
 ```bash
 # Using conda
 conda env create -f environment.yml
-conda activate template-project
+conda activate ek80adcp
 
 # Using mamba (faster)
 mamba env create -f environment.yml
-mamba activate template-project
+mamba activate ek80adcp
 
 # Using micromamba (lightweight)
 micromamba create -f environment.yml
-micromamba activate template-project
+micromamba activate ek80adcp
 ```
 
 ### Option B: Use `venv` and `pip`
@@ -99,20 +99,6 @@ If you prefer not to use the terminal:
 - Open the project folder in VSCode.
 - Install the Python extension and interpreter.
 - Run test scripts in the terminal panel or from notebooks.
-
-See also [faq.md](faq.md) for troubleshooting installation problems.
-
-
----
-
-## Git Workflows
-
-Depending on how you’re working:
-
-- If you are **working on your own project** using this template, see: [Solo Git](gitworkflow_solo.md)
-- If you are **contributing to someone else's project**, see: [Git Collaboration](gitcollab.md)
-
-Both guides include step-by-step workflows with examples using Terminal, VSCode, and GitHub Desktop.
 
 ---
 

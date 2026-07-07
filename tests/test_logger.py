@@ -1,7 +1,7 @@
 import logging
 import time
 
-from template_project import logger
+from ek80adcp import logger
 
 
 def test_setup_logger_creates_file_and_logs(tmp_path):
