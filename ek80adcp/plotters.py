@@ -203,7 +203,7 @@ def show_variables(data: str | xr.Dataset) -> Styler:
     """
     if isinstance(data, str):
         print(f"information is based on file: {data}")
-        dataset = xr.Dataset(data)
+        dataset = xr.open_dataset(data)
         variables = dataset.variables
     elif isinstance(data, xr.Dataset):
         print("information is based on xarray Dataset")

@@ -33,7 +33,7 @@ git push -u origin main
 ```
 
 ### Option B: Contribute to someone else's project
-See [Git Collaboration](gitcollab.md) for full instructions on forking and branching when contributing to another repository.
+See the GitHub documentation for full instructions on forking and branching when contributing to another repository.
 
 ---
 
@@ -99,20 +99,6 @@ If you prefer not to use the terminal:
 - Open the project folder in VSCode.
 - Install the Python extension and interpreter.
 - Run test scripts in the terminal panel or from notebooks.
-
-See also [faq.md](faq.md) for troubleshooting installation problems.
-
-
----
-
-## Git Workflows
-
-Depending on how you’re working:
-
-- If you are **working on your own project** using this template, see: [Solo Git](gitworkflow_solo.md)
-- If you are **contributing to someone else's project**, see: [Git Collaboration](gitcollab.md)
-
-Both guides include step-by-step workflows with examples using Terminal, VSCode, and GitHub Desktop.
 
 ---
 

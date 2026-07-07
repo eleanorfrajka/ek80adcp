@@ -37,15 +37,10 @@ jobs:
         micromamba run -n ek80adcp python -m pip install --upgrade pip
         micromamba run -n ek80adcp python -m pip install -e . --no-deps --force-reinstall
 
-    # Assumes that the notebook to be documented is located within notebooks/ and is called demo.ipynb
-    # In the example below, we've set `--ExecutePreprocessor.allow_errors=False` to fail if there are notebook errors
-    # For testing/development runs (when your code might have errors), you can set this flag to True.
     - name: Build documentation
       shell: bash -l {0}
       run: |
         set -e
-        micromamba run -n ek80adcp jupyter nbconvert --to notebook --execute notebooks/demo.ipynb --output=demo-output.ipynb --ExecutePreprocessor.allow_errors=False
-        mv notebooks/*output.ipynb docs/source/
         pushd docs
         micromamba run -n ek80adcp make clean html
         popd

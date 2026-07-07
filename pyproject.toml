@@ -36,7 +36,7 @@ where = ["."]
 include = ["ek80adcp"]
 
 [tool.setuptools.package-data]
-"ek80adcp" = ["py.typed", "*.yaml", "*.yml", "*.json"]
+"ek80adcp" = ["py.typed", "*.yaml", "*.yml", "*.json", "*.mplstyle"]
 
 [tool.setuptools.dynamic]
 dependencies = { file = ["requirements.txt"] }

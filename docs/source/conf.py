@@ -37,7 +37,7 @@ extensions = [
 # Configure nbsphinx for example notebooks
 # Allow errors in notebooks (useful for template examples)
 nbsphinx_allow_errors = True
-nbsphinx_execute = "auto"
+nbsphinx_execute = "never"
 nbsphinx_kernel_name = "python3"
 
 # Intersphinx mapping for cross-references
