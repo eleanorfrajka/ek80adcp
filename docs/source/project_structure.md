@@ -2,20 +2,20 @@
 
 > 🐍 This project is designed for a **Python-based code repository**. It includes features to help you manage, test, document, and share your code.
 
-Below is an overview of the files and folders you’ll find in the `template-project`, along with what they do and why they’re useful. If you're new to GitHub or Python packaging, this is your orientation.
+Below is an overview of the files and folders you’ll find in the `ek80adcp`, along with what they do and why they’re useful. If you're new to GitHub or Python packaging, this is your orientation.
 
 ---
 
 ## 🔍 Project Structure Overview
 
 📷 *This is what the template looks like when you clone or fork it:*
-# 📁 `template-project` File Structure
+# 📁 `ek80adcp` File Structure
 
 A minimal, modular Python project structure for collaborative research and reproducible workflows.
 
 ```
-template-project/
-├── template_project              # [core] Main Python package with scientific code
+ek80adcp/
+├── ek80adcp              # [core] Main Python package with scientific code
 │   ├── __init__.py               # [core] Makes this a Python package
 │   ├── plotters.py               # [core] Functions to plot data
 │   ├── readers.py                # [core] Functions to read raw data into xarray datasets
@@ -23,7 +23,7 @@ template-project/
 │   ├── writers.py                # [core] Functions to write data (e.g., to NetCDF)
 │   ├── tools.py                  # [core] Utilities for unit conversion, calculations, etc.
 │   ├── logger.py                 # [core] Structured logging configuration for reproducible runs
-│   ├── template_project.mplstyle # [core] Default plotting parameters
+│   ├── ek80adcp.mplstyle # [core] Default plotting parameters
 │   └── utilities.py              # [core] Helper functions (e.g., file download or parsing)
 │
 ├── tests/                        # [test] Unit tests using pytest
@@ -37,7 +37,7 @@ template-project/
 │   │   ├── conf.py               # [docs] Setup for documentation
 │   │   ├── index.rst             # [docs] Main page with menus in *.rst
 │   │   ├── setup.md              # [docs] One of the documentation pages in *.md
-│   │   ├── template_project.rst  # [docs] The file to create the API based on docstrings
+│   │   ├── ek80adcp.rst  # [docs] The file to create the API based on docstrings
 │   │   ├── ...                   # [docs] More *.md or *.rst linked in index.rst
 │   │   └── _static               # [docs] Figures
 │   │       ├── css/custom.css    # [docs, style] Custom style sheet for docs
@@ -84,7 +84,7 @@ The tags above give an indication of what parts of this template project are use
 - `# [style]` – Configuration for code style, linting, and formatting.
 - `# [meta]` – Project metadata (e.g., citation info, license, README).
 
-**Note:** There are also files that you may end up generating but which don't necessarily appear in the project on GitHub.com (due to being ignored by your `.gitignore`).  These may include your environment (`venv/`, if you use pip and virtual environments), distribution files `dist/` for building packages to deploy on http://pypi.org, `htmlcov/` for coverage reports for tests, `template_project_efw.egg-info` for editable installs (e.g., `pip install -e .`).
+**Note:** There are also files that you may end up generating but which don't necessarily appear in the project on GitHub.com (due to being ignored by your `.gitignore`).  These may include your environment (`venv/`, if you use pip and virtual environments), distribution files `dist/` for building packages to deploy on http://pypi.org, `htmlcov/` for coverage reports for tests, `ek80adcp_efw.egg-info` for editable installs (e.g., `pip install -e .`).
 
 ## 🔍 Notes
 
@@ -111,7 +111,7 @@ The tags above give an indication of what parts of this template project are use
 
 - **`pyproject.toml`** – A modern configuration file for building, installing, and describing your package (e.g. name, author, dependencies).
 - **`requirements-dev.txt`** – Additional tools for developers (testing, linting, formatting, etc.).
-- **`template_project/`** – Your main code lives here. Python will treat this as an importable module.
+- **`ek80adcp/`** – Your main code lives here. Python will treat this as an importable module.
 - **`pip install -e .`** – Lets you install your project locally in a way that updates as you edit files.
 
 ---

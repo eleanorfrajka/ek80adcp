@@ -1,6 +1,6 @@
 # Collaborating on Someone Else's Repository
 
-> 📝 This guide is part of the `template-project` documentation and is designed for contributors who are working on **a fork of someone else's repository**.
+> 📝 This guide is part of the `ek80adcp` documentation and is designed for contributors who are working on **a fork of someone else's repository**.
 
 This guide walks you through the typical GitHub workflow to:
 - **Fork** a repository
@@ -24,11 +24,11 @@ See [Github Intro](github_intro.md) for some (brief) additional information abou
 Create your *own copy* of a repository on GitHub.
 
 ### GitHub.com
-- Navigate to the repository you're interested in copying (e.g., `https://github.com/eleanorfrajka/template-project`).
+- Navigate to the repository you're interested in copying (e.g., `https://github.com/eleanorfrajka/ek80adcp`).
 - Click the **Fork** button (top right).
 - Select your account as the destination.
 
-This creates `https://github.com/YOUR_USERNAME/template-project` — your personal fork, in your account on Github.com.
+This creates `https://github.com/YOUR_USERNAME/ek80adcp` — your personal fork, in your account on Github.com.
 
 ---
 
@@ -38,8 +38,8 @@ Download your forked repo to your local machine.
 
 ### Terminal
 ```bash
-git clone https://github.com/yourusername/template-project.git
-cd template-project
+git clone https://github.com/yourusername/ek80adcp.git
+cd ek80adcp
 ```
 
 ### GitHub Desktop
@@ -59,7 +59,7 @@ This allows you to fetch changes from the original repository later.
 
 ### Terminal
 ```bash
-git remote add upstream https://github.com/eleanorfrajka/template-project.git
+git remote add upstream https://github.com/eleanorfrajka/ek80adcp.git
 git remote -v  # Check remotes
 ```
 
@@ -133,7 +133,7 @@ git push -u origin yourname-patch-1  # First time only (sets upstream)
 ### GitHub Desktop
 - Click `Push origin` in the top toolbar.
 
-This step pushes your changes to the **upstream main**, the original repository (e.g., if you're contributing to http://github.com/eleanorfrajka/template-project, then this is where they'll end up.
+This step pushes your changes to the **upstream main**, the original repository (e.g., if you're contributing to http://github.com/eleanorfrajka/ek80adcp, then this is where they'll end up.
 
 ---
 

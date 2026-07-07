@@ -2,7 +2,7 @@
 
 > 📦 PyPI (Python Package Index) is where you publish Python packages so others can install them with `pip install yourproject`.
 
-This guide walks you through publishing your project from `template-project` to PyPI — manually or automatically using GitHub Actions.
+This guide walks you through publishing your project from `ek80adcp` to PyPI — manually or automatically using GitHub Actions.
 
 ---
 
@@ -48,7 +48,7 @@ Update `pyproject.toml` under the `[project]` section:
 Example from this template:
 ```toml
 [project]
-name = "template-project-efw"
+name = "ek80adcp-efw"
 description = "Example template project for docs, pip install and git"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -70,9 +70,9 @@ dynamic = [
 ]
 
 [project.urls]
-documentation = "https://github.com/eleanorfrajka/template-project"
-homepage = "https://github.com/eleanorfrajka/template-project"
-repository = "https://github.com/eleanorfrajka/template-project"
+documentation = "https://github.com/eleanorfrajka/ek80adcp"
+homepage = "https://github.com/eleanorfrajka/ek80adcp"
+repository = "https://github.com/eleanorfrajka/ek80adcp"
 ```
 
 > 🎯 Change the `name`, `description`, `maintainers`, and URLs to match your own project.
@@ -81,7 +81,7 @@ repository = "https://github.com/eleanorfrajka/template-project"
 This template uses automatic versioning from git tags. Here's the config:
 ```toml
 [tool.setuptools_scm]
-write_to = "template_project/_version.py"
+write_to = "ek80adcp/_version.py"
 write_to_template = "__version__ = '{version}'"
 tag_regex = "^(?P<prefix>v)?(?P<version>[^\+]+)(?P<suffix>.*)?$"
 local_scheme = "no-local-version"
@@ -120,7 +120,7 @@ python3 -m twine upload --repository testpypi dist/*
 ```
 5. Install from TestPyPI:
 ```bash
-pip install -i https://test.pypi.org/simple/ --no-deps template-project-efw
+pip install -i https://test.pypi.org/simple/ --no-deps ek80adcp-efw
 ```
 
 > ⚠️ If you see an error like:

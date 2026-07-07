@@ -4,9 +4,9 @@
 
 ---
 
-## 🐍 Import Error: `from template_project import plotters`
+## 🐍 Import Error: `from ek80adcp import plotters`
 
-**Problem:** Python can’t find the `template_project` module.
+**Problem:** Python can’t find the `ek80adcp` module.
 
 ### ✅ Option 1: Install the package locally (recommended)
 
@@ -27,11 +27,11 @@ This lets Python find your package and reflects changes without needing to reins
 If you're working in a Jupyter notebook and haven't installed the package, insert this before importing:
 ```python
 import sys
-sys.path.append("/path/to/your/template-project")
+sys.path.append("/path/to/your/ek80adcp")
 ```
 Then you can run:
 ```python
-from template_project import plotters
+from ek80adcp import plotters
 ```
 This is useful for testing during development, but installation is preferred.
 
@@ -61,19 +61,19 @@ If this works locally, your GitHub Actions will likely succeed too.
 
 ---
 
-## 🤔 What's the difference between `template-project` and `template_project`?
+## 🤔 What's the difference between `ek80adcp` and `ek80adcp`?
 
-- **`template-project`** is the name of the repository — it's fine to use hyphens in GitHub repo names.
-- **`template_project`** is the name of the Python package (i.e., the importable module) — dashes are not allowed in Python package names.
+- **`ek80adcp`** is the name of the repository — it's fine to use hyphens in GitHub repo names.
+- **`ek80adcp`** is the name of the Python package (i.e., the importable module) — dashes are not allowed in Python package names.
 
 | Term               | Use For                          |
 |--------------------|-----------------------------------|
-| `template-project` | GitHub repository name            |
-| `template_project` | Python package (`import` syntax)  |
+| `ek80adcp` | GitHub repository name            |
+| `ek80adcp` | Python package (`import` syntax)  |
 
 ### Could they be the same name?
-- ✅ Yes: Both could be `template_project`
-- 🚫 No: Avoid `template-project` for the Python module
+- ✅ Yes: Both could be `ek80adcp`
+- 🚫 No: Avoid `ek80adcp` for the Python module
 
 ### Why this setup?
 - Originally accidental, but it reinforces the distinction between repo and code module.
@@ -187,6 +187,6 @@ git push origin your-branch-name
 
 ## 🙋 Still stuck?
 
-Check [setup.md](setup.md), or ask a question by opening an issue at [github.com/eleanorfrajka/template-project](https://github.com/eleanorfrajka/template-project/issues).
+Check [setup.md](setup.md), or ask a question by opening an issue at [github.com/eleanorfrajka/ek80adcp](https://github.com/eleanorfrajka/ek80adcp/issues).
 
 > ✅ This FAQ is a living document — feel free to suggest improvements!

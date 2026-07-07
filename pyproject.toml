@@ -7,8 +7,8 @@ requires = [
 ]
 
 [project]
-name = "template-project-efw"
-description = "Example template project for docs, pip install and git"
+name = "ek80adcp"
+description = "Tools for reading and processing EK80 ADCP data"
 readme = "README.md"
 license = { file = "LICENSE" }
 authors = [
@@ -26,17 +26,17 @@ classifiers = [
 # Define which fields are read from files/tools
 dynamic = ["version", "dependencies", "optional-dependencies"]
 [project.urls]
-documentation = "https://github.com/eleanorfrajka/template-project"
-homepage = "https://github.com/eleanorfrajka/template-project"
-repository = "https://github.com/eleanorfrajka/template-project"
+documentation = "https://github.com/eleanorfrajka/ek80adcp"
+homepage = "https://github.com/eleanorfrajka/ek80adcp"
+repository = "https://github.com/eleanorfrajka/ek80adcp"
 
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["template_project"]
+include = ["ek80adcp"]
 
 [tool.setuptools.package-data]
-"template_project" = ["py.typed", "*.yaml", "*.yml", "*.json"]
+"ek80adcp" = ["py.typed", "*.yaml", "*.yml", "*.json"]
 
 [tool.setuptools.dynamic]
 dependencies = { file = ["requirements.txt"] }
@@ -47,7 +47,7 @@ dev = { file = ["requirements.txt", "requirements-dev.txt"] }
 # Note: Add other groups like 'docs', 'test' as needed
 
 [tool.setuptools_scm]
-write_to = "template_project/_version.py"
+write_to = "ek80adcp/_version.py"
 write_to_template = "__version__ = '{version}'"
 version_scheme = "no-guess-dev"
 local_scheme = "no-local-version"
@@ -65,6 +65,7 @@ ignore = [
 [tool.ruff]
 target-version = "py311"
 line-length = 88
+exclude = ["notebooks/"]
 
 [tool.ruff.lint]
 select = [
@@ -160,9 +161,9 @@ markers = [
 ]
 
 [tool.coverage.run]
-source = ["template_project"]
+source = ["ek80adcp"]
 omit = [
-    "template_project/_version.py",
+    "ek80adcp/_version.py",
     "*/tests/*",
 ]
 
@@ -183,8 +184,8 @@ show_missing = true
 
 [tool.towncrier]
 # Configuration for automated changelog generation
-package = "template_project"
-package_dir = "template_project"
+package = "ek80adcp"
+package_dir = "ek80adcp"
 filename = "CHANGELOG.md"
 directory = "changelog.d"
 start_string = "<!-- towncrier release notes start -->\n"

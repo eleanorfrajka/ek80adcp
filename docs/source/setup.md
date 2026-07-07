@@ -15,11 +15,11 @@ You're making a fresh project based on this template.
 #### a. Clone the repository to your computer
 From a **terminal**:
 ```bash
-git clone https://github.com/eleanorfrajka/template-project
+git clone https://github.com/eleanorfrajka/ek80adcp
 ```
 
 Or in your **browser**:
-1. Navigate to [https://github.com/eleanorfrajka/template-project](https://github.com/eleanorfrajka/template-project)
+1. Navigate to [https://github.com/eleanorfrajka/ek80adcp](https://github.com/eleanorfrajka/ek80adcp)
 2. Click the green `<> Code` button.
 3. Choose **Open with GitHub Desktop**.
 
@@ -48,15 +48,15 @@ If you're using conda-based environment management, create an environment from t
 ```bash
 # Using conda
 conda env create -f environment.yml
-conda activate template-project
+conda activate ek80adcp
 
 # Using mamba (faster)
 mamba env create -f environment.yml
-mamba activate template-project
+mamba activate ek80adcp
 
 # Using micromamba (lightweight)
 micromamba create -f environment.yml
-micromamba activate template-project
+micromamba activate ek80adcp
 ```
 
 ### Option B: Use `venv` and `pip`

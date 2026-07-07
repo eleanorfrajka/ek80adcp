@@ -1,7 +1,7 @@
 import numpy as np
 import xarray as xr
 
-from template_project.writers import save_dataset
+from ek80adcp.writers import save_dataset
 
 
 def create_dummy_dataset():

@@ -6,11 +6,12 @@ from functools import wraps
 from pathlib import Path
 from urllib.parse import urlparse
 
+import numpy as np
 import requests
 import xarray as xr
 
-from template_project import logger
-from template_project.logger import log_debug, log_error, log_info
+from ek80adcp import logger
+from ek80adcp.logger import log_debug, log_error, log_info
 
 log = logger.log
 
@@ -196,6 +197,28 @@ def download_file(url: str, dest_folder: str, redownload: bool = False) -> str:
         raise ValueError(f"Unsupported URL scheme in {url}")
 
     return str(local_filename)
+
+
+def pad_to_max_columns(arr: np.ndarray, n_cols: int) -> np.ndarray:
+    """Pad a 2-D array to ``n_cols`` columns with NaN on the right.
+
+    Parameters
+    ----------
+    arr : np.ndarray
+        2-D array of shape ``(n_rows, m)`` where ``m <= n_cols``.
+    n_cols : int
+        Target number of columns.
+
+    Returns
+    -------
+    np.ndarray
+        Array of shape ``(n_rows, n_cols)``.
+
+    """
+    if arr.shape[1] == n_cols:
+        return arr
+    pad = n_cols - arr.shape[1]
+    return np.pad(arr, ((0, 0), (0, pad)), mode="constant", constant_values=np.nan)
 
 
 def safe_update_attrs(

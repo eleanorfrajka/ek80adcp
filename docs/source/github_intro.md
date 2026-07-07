@@ -2,7 +2,7 @@
 
 > 🐙 GitHub is where your project lives online. It works with Git (your version control tool) to help you back up code, collaborate with others, and track changes over time.
 
-This guide introduces basic GitHub terms and features, aimed at beginners using the `template-project`.
+This guide introduces basic GitHub terms and features, aimed at beginners using the `ek80adcp`.
 
 ---
 

@@ -1,4 +1,4 @@
-name: template-project
+name: ek80adcp
 channels:
   - conda-forge
 dependencies:

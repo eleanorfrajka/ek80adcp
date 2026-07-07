@@ -1,11 +1,15 @@
 cff-version: 1.2.0
-message: "This is just a demo of CITATION.cff.  You do not need to cite this software."
+message: "If you use this software, please cite it as below."
 authors:
 - family-names: Frajka-Williams
   given-names: Eleanor
   orcid: https://orcid.org/0000-0001-8773-7838
   affiliation: University of Hamburg, Bundesstraße 53, 20146 Hamburg, Germany
-title: template-project
+- family-names: Perez Hernandez
+  given-names: Lola
+  affiliation: Instituto de Oceanografía y Cambio Global (IOCAG), University of Las Palmas de Gran Canaria
+title: ek80adcp
 version: 0.0.0
-date-released: 2025-04-12
-url: https://github.com/eleanorfrajka/template-project
+date-released: 2025-08-31
+url: https://github.com/eleanorfrajka/ek80adcp
+notes: "Initial code contributed by Lola Perez Hernandez."

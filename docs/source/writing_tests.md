@@ -1,6 +1,6 @@
 # Writing and Running Tests
 
-> 🧪 This guide explains how to write and run tests using `pytest`, following the structure used in the template-project.
+> 🧪 This guide explains how to write and run tests using `pytest`, following the structure used in the ek80adcp.
 
 Writing good tests helps you avoid bugs, refactor safely, and ensure your code does what you expect — even weeks or months later.
 
@@ -31,7 +31,7 @@ To test your own project modules, just import them like normal:
 
 ```python
 # tests/test_tools.py
-from template_project.tools import convert_units
+from ek80adcp.tools import convert_units
 
 def test_convert_units_basic():
     result = convert_units(10, "m", "km")
@@ -83,7 +83,7 @@ Test coverage shows which lines of code are executed during testing. Higher cove
 ### Quick Coverage Check
 ```bash
 # Basic coverage report in terminal
-pytest --cov=template_project --cov-report=term-missing
+pytest --cov=ek80adcp --cov-report=term-missing
 ```
 
 This shows:
@@ -94,7 +94,7 @@ This shows:
 
 For a comprehensive view, generate an HTML report:
 ```bash
-pytest --cov=template_project --cov-report=html
+pytest --cov=ek80adcp --cov-report=html
 ```
 Then open `htmlcov/index.html` in your browser.
 
@@ -104,8 +104,8 @@ Then open `htmlcov/index.html` in your browser.
 ```
 Name                    Stmts   Miss  Cover   Missing
 -----------------------------------------------------
-template_project/tools.py    20      3    85%   63, 96-97
-template_project/utils.py    78     24    69%   79-80, 113-120
+ek80adcp/tools.py    20      3    85%   63, 96-97
+ek80adcp/utils.py    78     24    69%   79-80, 113-120
 -----------------------------------------------------
 TOTAL                       354     76    79%
 ```
@@ -151,8 +151,8 @@ If you're using [pre-commit hooks](precommit_guide.md), you can configure them t
 | Run all tests           | `pytest`                                   |
 | Run specific test file  | `pytest tests/test_xyz.py`                 |
 | Run specific test       | `pytest tests/test_xyz.py::test_name`      |
-| Coverage report (terminal) | `pytest --cov=template_project --cov-report=term-missing` |
-| Coverage report (HTML) | `pytest --cov=template_project --cov-report=html` |
+| Coverage report (terminal) | `pytest --cov=ek80adcp --cov-report=term-missing` |
+| Coverage report (HTML) | `pytest --cov=ek80adcp --cov-report=html` |
 | Install test tools      | `pip install -r requirements-dev.txt`     |
 
 > ✅ Tests help you make confident changes. Use them early, and use them often!

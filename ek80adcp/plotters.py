@@ -1,55 +1,188 @@
-"""Visualization utilities for oceanographic data."""
+"""Visualization utilities for EK80 ADCP data."""
 
 from pathlib import Path
 from typing import Any
 
+import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
+import numpy as np
 import xarray as xr
 from pandas import DataFrame
 from pandas.io.formats.style import Styler
 
 
-def plot_monthly_transport(
-    ds: xr.Dataset, var: str = "moc_mar_hc10"
+def _use_style() -> None:
+    """Apply the package matplotlib style."""
+    here = Path(__file__).resolve().parent
+    plt.style.use(here / "ek80adcp.mplstyle")
+
+
+def plot_velocity_at_depth(
+    ds: xr.Dataset,
+    depth_idx: int = 3,
+    figsize: tuple[float, float] = (15, 8),
 ) -> tuple[Any, Any]:
-    """Plot original and monthly averaged transport time series.
+    """Plot eastward and northward velocity at one depth bin.
 
     Parameters
     ----------
     ds : xr.Dataset
-        Dataset with a time dimension and a transport variable.
-    var : str, optional
-        Name of the variable to plot. Default is "moc_mar_hc10".
+        Dataset with ``vx``, ``vy`` variables and ``time``, ``depth`` coords,
+        as returned by :func:`~ek80adcp.readers.load_ek80`.
+    depth_idx : int, optional
+        Index along the depth axis to plot. Default is 3.
+    figsize : tuple of float, optional
+        Figure size in inches ``(width, height)``.
+
+    Returns
+    -------
+    fig, ax : matplotlib Figure and Axes
+
     """
-    here = Path(__file__).resolve().parent
-    plt.style.use(here / "template_project.mplstyle")
+    _use_style()
 
-    da = ds[var]
-    ds_monthly = ds.resample(TIME="ME").mean()
+    depth_m = float(ds.depth.values[depth_idx])
+    vx = ds["vx"].isel(depth=depth_idx).values
+    vy = ds["vy"].isel(depth=depth_idx).values
+    t = ds["time"].values
 
-    fig, ax = plt.subplots()
-    ax.plot(ds.TIME, da, color="grey", alpha=0.5, linewidth=0.5, label="Original")
-    ax.plot(
-        ds_monthly.TIME,
-        ds_monthly[var],
-        color="red",
-        linewidth=1.0,
-        label="Monthly Avg",
-    )
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.plot(t, vy, color="blue", linewidth=0.8, label="North (vy)")
+    ax.plot(t, vx, color="red", linewidth=0.8, label="East (vx)")
     ax.axhline(0, color="black", linestyle="--", linewidth=0.5)
-
-    ax.set_title("RAPID 26°N - AMOC")
-
-    # Use variable attributes if present
-    label = da.attrs.get("long_name", var)
-    units = da.attrs.get("units", "")
-    ax.set_ylabel(f"{label} [{units}]" if units else label)
-
+    ax.set_title(f"EK80 ADCP velocity at depth bin {depth_idx} ({depth_m:.1f} m)")
+    ax.set_xlabel("Time")
+    ax.set_ylabel("Velocity (m s⁻¹)")
+    ax.xaxis_date()
+    ax.tick_params(axis="x", rotation=30)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
     ax.legend()
     plt.tight_layout()
+    return fig, ax
 
+
+def plot_hovmoller(
+    ds: xr.Dataset,
+    vmin: float = -0.3,
+    vmax: float = 0.3,
+    figsize: tuple[float, float] = (15, 18),
+) -> tuple[Any, Any]:
+    """Plot depth-time Hovmoller diagrams for vx, vy, and vz.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        Dataset with ``vx``, ``vy``, ``vz`` and ``time``, ``depth`` coords.
+    vmin : float, optional
+        Colour scale minimum. Default ``-0.3``.
+    vmax : float, optional
+        Colour scale maximum. Default ``0.3``.
+    figsize : tuple of float, optional
+        Figure size in inches.
+
+    Returns
+    -------
+    fig, axes : matplotlib Figure and array of Axes
+
+    """
+    import cmocean  # noqa: PLC0415
+
+    _use_style()
+
+    x_time = mdates.date2num(ds["time"].values.astype("datetime64[ms]").astype(object))
+    depths = ds["depth"].values
+
+    fig, axes = plt.subplots(3, 1, figsize=figsize, sharex=True)
+    components = [
+        ("vx", "Eastward (vx)"),
+        ("vy", "Northward (vy)"),
+        ("vz", "Downward (vz)"),
+    ]
+
+    for ax, (var, label) in zip(axes, components, strict=True):
+        data = ds[var].values.T  # (depth, time)
+        img = ax.pcolormesh(
+            x_time,
+            depths,
+            np.ma.masked_invalid(data),
+            cmap=cmocean.cm.balance,
+            vmin=vmin,
+            vmax=vmax,
+            shading="auto",
+        )
+        ax.set_title(label)
+        ax.set_ylabel("Depth (m)")
+        ax.set_ylim(depths[-1], depths[0])
+        cbar = fig.colorbar(img, ax=ax, pad=0.03)
+        cbar.set_label("m s⁻¹")
+        ax.xaxis_date()
+        ax.tick_params(axis="x", rotation=30)
+
+    axes[-1].set_xlabel("Time")
+    fig.suptitle("EK80 ADCP velocity components")
+    fig.tight_layout(rect=[0, 0, 1, 0.98])
+    return fig, axes
+
+
+def plot_track_quiver(
+    ds: xr.Dataset,
+    depth_idx: int = 0,
+    step: int | None = None,
+    figsize: tuple[float, float] = (10, 10),
+) -> tuple[Any, Any]:
+    """Plot platform track with current vector arrows.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        Dataset with ``lon``, ``lat``, ``vx``, ``vy`` and ``time``, ``depth`` coords.
+    depth_idx : int, optional
+        Depth bin index to use for arrow magnitude. Default is 0 (shallowest).
+    step : int or None, optional
+        Subsample interval for arrows. ``None`` auto-selects ~150 arrows.
+    figsize : tuple of float, optional
+        Figure size in inches.
+
+    Returns
+    -------
+    fig, ax : matplotlib Figure and Axes
+
+    """
+    _use_style()
+
+    lon = ds["lon"].values
+    lat = ds["lat"].values
+    u = ds["vx"].isel(depth=depth_idx).values
+    v = ds["vy"].isel(depth=depth_idx).values
+
+    mask = np.isfinite(lon) & np.isfinite(lat) & np.isfinite(u) & np.isfinite(v)
+    lon, lat, u, v = lon[mask], lat[mask], u[mask], v[mask]
+
+    if step is None:
+        step = max(1, len(lon) // 150)
+
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.plot(lon, lat, color="gray", linewidth=1, alpha=0.8, label="Track")
+    ax.quiver(
+        lon[::step],
+        lat[::step],
+        u[::step],
+        v[::step],
+        angles="xy",
+        scale_units="xy",
+        scale=1,
+        width=0.003,
+    )
+    depth_m = float(ds.depth.values[depth_idx])
+    ax.set_title(f"EK80 ADCP current vectors at {depth_m:.1f} m")
+    ax.set_xlabel("Longitude (°E)")
+    ax.set_ylabel("Latitude (°N)")
+    ax.grid(visible=True, alpha=0.3)
+    ax.legend()
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    plt.tight_layout()
     return fig, ax
 
 
@@ -58,15 +191,15 @@ def show_variables(data: str | xr.Dataset) -> Styler:
 
     Parameters
     ----------
-    data (str or xr.Dataset): The input data, either a file path to a netCDF file or an xarray Dataset.
+    data : str or xr.Dataset
+        File path to a netCDF file or an xarray Dataset.
 
     Returns
     -------
-    pandas.io.formats.style.Styler: A styled DataFrame containing the following columns:
-        - dims: The dimension of the variable (or "string" if it is a string type).
-        - name: The name of the variable.
-        - units: The units of the variable (if available).
-        - comment: Any additional comments about the variable (if available).
+    pandas.io.formats.style.Styler
+        Styled DataFrame with columns ``dims``, ``units``, ``comment``,
+        ``standard_name``, ``dtype``.
+
     """
     if isinstance(data, str):
         print(f"information is based on file: {data}")
@@ -99,51 +232,52 @@ def show_variables(data: str | xr.Dataset) -> Styler:
             "dtype": str(var.dtype) if isinstance(data, str) else str(var.data.dtype),
         }
 
-    vars = DataFrame(info).T
+    vars_df = DataFrame(info).T
 
-    dim = vars.dims
+    dim = vars_df.dims
     dim[dim.str.startswith("str")] = "string"
-    vars["dims"] = dim
+    vars_df["dims"] = dim
 
-    vars = (
-        vars.sort_values(["dims", "name"])
+    return (
+        vars_df.sort_values(["dims", "name"])
         .reset_index(drop=True)
         .loc[:, ["dims", "name", "units", "comment", "standard_name", "dtype"]]
         .set_index("name")
         .style
     )
 
-    return vars
-
 
 def show_attributes(data: str | xr.Dataset) -> DataFrame:
-    """Extract attribute information from a Dataset or netCDF file as a DataFrame.
+    """Extract global attributes from a Dataset or netCDF file as a DataFrame.
 
     Parameters
     ----------
-    data (str or xr.Dataset): The input data, either a file path to a netCDF file or an xarray Dataset.
+    data : str or xr.Dataset
+        File path to a netCDF file or an xarray Dataset.
 
     Returns
     -------
-    pandas.DataFrame: A DataFrame containing the following columns:
-        - Attribute: The name of the attribute.
-        - Value: The value of the attribute.
-    """
-    from netCDF4 import Dataset
+    pandas.DataFrame
+        DataFrame with columns ``Attribute``, ``Value``, ``DType``.
 
+    """
     if isinstance(data, str):
+        from netCDF4 import Dataset  # noqa: PLC0415
+
         print(f"information is based on file: {data}")
         rootgrp = Dataset(data, "r", format="NETCDF4")
         attributes = rootgrp.ncattrs()
 
-        def get_attr(key):
+        def get_attr(key: str) -> Any:
             return getattr(rootgrp, key)
+
     elif isinstance(data, xr.Dataset):
         print("information is based on xarray Dataset")
         attributes = data.attrs.keys()
 
-        def get_attr(key):
+        def get_attr(key: str) -> Any:
             return data.attrs[key]
+
     else:
         raise TypeError("Input data must be a file path (str) or an xarray Dataset")
 
@@ -152,6 +286,4 @@ def show_attributes(data: str | xr.Dataset) -> DataFrame:
         dtype = type(get_attr(key)).__name__
         info[i] = {"Attribute": key, "Value": get_attr(key), "DType": dtype}
 
-    attrs = DataFrame(info).T
-
-    return attrs
+    return DataFrame(info).T

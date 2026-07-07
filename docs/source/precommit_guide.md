@@ -2,7 +2,7 @@
 
 > 🔄 Pre-commit hooks help keep your code clean. They automatically format, lint, and check your files *before* a commit is made — reducing review time and improving consistency.
 
-This guide walks you through setting up `pre-commit` in your project using the configuration in `template-project`.
+This guide walks you through setting up `pre-commit` in your project using the configuration in `ek80adcp`.
 
 ---
 

@@ -2,7 +2,7 @@
 
 > ⚙️ GitHub Actions are tools that run automatically when certain things happen in your repository. They can test your code, build your docs, publish your package, and more.
 
-In `template-project`, GitHub Actions live in the `.github/workflows/` folder.
+In `ek80adcp`, GitHub Actions live in the `.github/workflows/` folder.
 
 ---
 

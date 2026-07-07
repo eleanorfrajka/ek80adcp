@@ -1,6 +1,6 @@
 # Solo Git Workflow for Your Project
 
-> 📝 This file is part of the `template-project` starter documentation. Once you’ve adapted the template for your own project, you can rename or delete this file.
+> 📝 This file is part of the `ek80adcp` starter documentation. Once you’ve adapted the template for your own project, you can rename or delete this file.
 
 This guide explains how to work **on your own project** using Git. You’ll learn how to:
 - Create branches to safely edit your code.
@@ -108,7 +108,7 @@ In a solo project, this usually works automatically. You only need to set the up
 - If prompted to select a remote, choose `origin` (your GitHub-hosted repo).  Note, if you're collaborating with an external repository, you may instead be choosing `upstream` (see [Git Collaboration](gitcollab.md)).
 
 ### GitHub.com
-- After pushing, visit your repository on GitHub, e.g. `http://github.com/YOUR_USERNAME/template-project`.
+- After pushing, visit your repository on GitHub, e.g. `http://github.com/YOUR_USERNAME/ek80adcp`.
 - Click “Compare & pull request” when prompted.
 - Add a short message describing your changes.
 - Click “Create pull request”.

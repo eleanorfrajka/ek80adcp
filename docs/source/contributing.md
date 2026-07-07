@@ -59,7 +59,7 @@ pytest -m "unit"              # Run only unit tests
 pytest -m "integration"       # Run only integration tests
 
 # Run tests with coverage
-pytest --cov=template_project --cov-report term-missing
+pytest --cov=ek80adcp --cov-report term-missing
 ```
 
 ### 4. Code Quality Checks

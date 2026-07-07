@@ -1,23 +1,23 @@
-:mod:`template_project API`
+:mod:`ek80adcp API`
 ---------------------------
 
-.. automodule:: template_project.readers
+.. automodule:: ek80adcp.readers
    :members:
    :undoc-members:
 
-.. automodule:: template_project.plotters
+.. automodule:: ek80adcp.plotters
    :members:
    :undoc-members:
 
-.. automodule:: template_project.writers
+.. automodule:: ek80adcp.writers
    :members:
    :undoc-members:
 
-.. automodule:: template_project.tools
+.. automodule:: ek80adcp.tools
    :members:
    :undoc-members:
 
-.. automodule:: template_project.utilities
+.. automodule:: ek80adcp.utilities
    :members:
    :undoc-members:
 

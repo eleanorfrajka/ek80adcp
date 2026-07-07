@@ -1,6 +1,6 @@
 # Customisation Checklist for New Projects
 
-> 🧰 This checklist highlights places where you should replace or update names like `template_project`, `template-project`, or personal info like `Eleanor` to make the project your own.
+> 🧰 This checklist highlights places where you should replace or update names like `ek80adcp`, `ek80adcp`, or personal info like `Eleanor` to make the project your own.
 
 Use `grep` or your editor’s search tool to find these across the project.
 
@@ -8,30 +8,30 @@ Use `grep` or your editor’s search tool to find these across the project.
 
 ## 📁 Core Package and Import Paths
 
-- [ ] Rename `template_project/` → `your_project_name/` (*Recommended:* Don't use spaces or dashes.  Underscores are OK.)
+- [ ] Rename `ek80adcp/` → `your_project_name/` (*Recommended:* Don't use spaces or dashes.  Underscores are OK.)
 - [ ] Update imports in all source and test files:
-  - `from template_project import ...`
-  - `template_project.tools`, `template_project.readers`, etc.
-- [ ] Check for relative paths in notebooks: `from template_project import ...`
+  - `from ek80adcp import ...`
+  - `ek80adcp.tools`, `ek80adcp.readers`, etc.
+- [ ] Check for relative paths in notebooks: `from ek80adcp import ...`
 
 ---
 
 ## 🧪 Testing
 
 - [ ] In `tests/`, update:
-  - Import statements: `from template_project import ...`
-  - File/module names like `test_template_project.py`
+  - Import statements: `from ek80adcp import ...`
+  - File/module names like `test_ek80adcp.py`
 - [ ] In `.github/actions/`, update `tests.yml`:
-  - Coverage flags in `pytest`: `--cov=template_project`
+  - Coverage flags in `pytest`: `--cov=ek80adcp`
 
 ---
 
 ## ⚙️ Configuration and Metadata
 
 ### `pyproject.toml`
-- [ ] `name = "template-project-efw"` → use your PyPI-compatible name
+- [ ] `name = "ek80adcp-efw"` → use your PyPI-compatible name
 - [ ] Update `description`, `maintainers`, and `urls`
-- [ ] Edit `write_to = "template_project/_version.py"`
+- [ ] Edit `write_to = "ek80adcp/_version.py"`
 
 ### `.pre-commit-config.yaml`
 - [ ] Edit coverage and file match patterns (e.g., `pytest --cov=...`, excludes)
@@ -47,10 +47,10 @@ Use `grep` or your editor’s search tool to find these across the project.
 
 ### `docs/index.rst`
 - [ ] Change title and subtitle lines
-- [ ] Swap `template-project` references
+- [ ] Swap `ek80adcp` references
 - [ ] Replace intro blurb with your own project description
 
-### `docs/source/template_project.rst`
+### `docs/source/ek80adcp.rst`
 - [ ] Update to match your new package name (or delete if auto-generated)
 - [ ] Update any `automodule::` or `:mod:` references
 
@@ -74,15 +74,15 @@ Use `grep` or your editor’s search tool to find these across the project.
 
 ### `README.md`
 - [ ] Replace:
-  - `template_project/*.py`
+  - `ek80adcp/*.py`
   - `Template for a Python project for oceanography`
 - [ ] Customize usage examples and purpose statement
 - [ ] Add badges for Zenodo or PyPI once those steps are completed
 
 ### `CONTRIBUTING.md`
-- [ ] Update module paths in examples (e.g., `template_project.tools`)
+- [ ] Update module paths in examples (e.g., `ek80adcp.tools`)
 - [ ] Mention your GitHub handle or org instead of “Eleanor”
-- [ ] Replace style file references like `template_project/template_project.mplstyle`
+- [ ] Replace style file references like `ek80adcp/ek80adcp.mplstyle`
 
 ---
 

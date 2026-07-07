@@ -1,187 +1,101 @@
-"""Data loading functions for oceanographic datasets."""
+"""Data loading functions for EK80 ADCP datasets."""
 
-from collections.abc import Callable
 from pathlib import Path
 
-import pandas as pd
 import xarray as xr
 
-from template_project import logger
-from template_project.logger import log_info
-from template_project.read_rapid import read_rapid
+from ek80adcp import logger
+from ek80adcp.logger import log_info
+from ek80adcp.read_ek80 import read_ek80
 
 log = logger.log
 
+# EK80 file names follow the pattern T{YYYYMM}-D{YYYYMMDD}-T{HHMMSS}.nc
+_EK80_GLOB = "T*-D*-T*.nc"
 
-def _get_reader(array_name: str) -> Callable:
-    """Return the reader function for the given array name.
+
+def find_ek80_files(
+    data_dir: str | Path | None = None,
+    candidate_dirs: list[str | Path] | None = None,
+) -> list[Path]:
+    """Find EK80 ADCP NetCDF files matching the EK80 naming convention.
+
+    Files are matched with the glob pattern ``T*-D*-T*.nc``.
 
     Parameters
     ----------
-    array_name : str
-        The name of the observing array.
+    data_dir : str or Path, optional
+        Primary directory to search. Defaults to the project ``data/`` folder.
+    candidate_dirs : list of str or Path, optional
+        Additional directories to search. Appended after ``data_dir``.
 
     Returns
     -------
-    function
-        Reader function corresponding to the given array name.
-
-    Raises
-    ------
-    ValueError
-        If an unknown array name is provided.
+    list of Path
+        Sorted, deduplicated list of matching file paths.
 
     """
-    readers = {
-        "rapid": read_rapid,
-    }
-    try:
-        return readers[array_name.lower()]
-    except KeyError:
-        raise ValueError(
-            f"Unknown array name: {array_name}. Valid options are: {list(readers.keys())}",
-        ) from None
+    from ek80adcp.utilities import get_default_data_dir
+
+    search_dirs: list[Path] = [Path(data_dir) if data_dir else get_default_data_dir()]
+    if candidate_dirs:
+        search_dirs.extend(Path(d) for d in candidate_dirs)
+
+    seen: set[Path] = set()
+    files: list[Path] = []
+    for d in search_dirs:
+        if d.exists():
+            for f in sorted(d.glob(_EK80_GLOB)):
+                if f not in seen:
+                    seen.add(f)
+                    files.append(f)
+
+    log_info(
+        "Found %d EK80 file(s) in %d director%s",
+        len(files),
+        len(search_dirs),
+        "y" if len(search_dirs) == 1 else "ies",
+    )
+    return files
 
 
-def load_sample_dataset(array_name: str = "rapid") -> xr.Dataset:
-    """Load a sample dataset for quick testing.
-
-    Currently supports:
-    - 'rapid' : loads the 'RAPID_26N_TRANSPORT.nc' file
+def load_ek80(
+    data_dir: str | Path | None = None,
+    file_list: list[str | Path] | None = None,
+) -> xr.Dataset:
+    """Load EK80 ADCP data from a directory or an explicit file list.
 
     Parameters
     ----------
-    array_name : str, optional
-        The name of the observing array to load. Default is 'rapid'.
+    data_dir : str or Path, optional
+        Directory containing EK80 NetCDF files. Ignored when ``file_list``
+        is provided. Defaults to the project ``data/`` folder.
+    file_list : list of str or Path, optional
+        Explicit list of file paths to load. When provided, ``data_dir``
+        is ignored.
 
     Returns
     -------
     xr.Dataset
-        A single xarray Dataset from the sample file.
+        Combined dataset with dimensions ``(time, depth)``.
 
     Raises
     ------
-    ValueError
-        If the array_name is not recognised.
-
-    """
-    if array_name.lower() == "rapid":
-        sample_file = "moc_transports.nc"
-        datasets = load_dataset(
-            array_name=array_name,
-            file_list=sample_file,
-            transport_only=True,
-        )
-        if not datasets:
-            raise FileNotFoundError(
-                f"No datasets were loaded for sample file: {sample_file}",
-            )
-        return datasets[0]
-
-    raise ValueError(
-        f"Sample dataset for array '{array_name}' is not defined. "
-        "Currently only 'rapid' is supported.",
-    )
-
-
-def load_dataset(
-    array_name: str,
-    source: str = None,
-    file_list: str | list[str] | None = None,
-    transport_only: bool = True,
-    data_dir: str | Path | None = None,
-    redownload: bool = False,
-) -> list[xr.Dataset]:
-    """Load raw datasets from a selected AMOC observing array.
-
-    Parameters
-    ----------
-    array_name : str
-        The name of the observing array to load. Options are:
-        - 'rapid' : RAPID 26N array
-    source : str, optional
-        URL or local path to the data source.
-        If None, the reader-specific default source will be used.
-    file_list : str or list of str, optional
-        Filename or list of filenames to process.
-        If None, the reader-specific default files will be used.
-    transport_only : bool, optional
-        If True, restrict to transport files only.
-    data_dir : str, optional
-        Local directory for downloaded files.
-    redownload : bool, optional
-        If True, force redownload of the data.
-
-    Returns
-    -------
-    list of xarray.Dataset
-        List of datasets loaded from the specified array.
-
-    Raises
-    ------
-    ValueError
-        If an unknown array name is provided.
+    FileNotFoundError
+        If no EK80 files are found.
 
     """
     if logger.LOGGING_ENABLED:
-        logger.setup_logger(array_name=array_name)
+        logger.setup_logger(array_name="ek80")
 
-    log_info(f"Loading dataset for array: {array_name}")
+    if file_list is not None:
+        files = [Path(f) for f in file_list]
+    else:
+        files = find_ek80_files(data_dir=data_dir)
 
-    reader = _get_reader(array_name)
-    datasets = reader(
-        source=source,
-        file_list=file_list,
-        transport_only=transport_only,
-        data_dir=data_dir,
-        redownload=redownload,
-    )
+    if not files:
+        searched = str(data_dir) if data_dir else "default data directory"
+        raise FileNotFoundError(f"No EK80 NetCDF files found in {searched}.")
 
-    log_info(f"Successfully loaded {len(datasets)} dataset(s) for array: {array_name}")
-    _summarise_datasets(datasets, array_name)
-
-    return datasets
-
-
-def _summarise_datasets(datasets: list[xr.Dataset], array_name: str) -> None:
-    """Print and log a summary of loaded datasets."""
-    summary_lines = []
-    summary_lines.append(f"Summary for array '{array_name}':")
-    summary_lines.append(f"Total datasets loaded: {len(datasets)}\n")
-
-    for idx, ds in enumerate(datasets, start=1):
-        summary_lines.append(f"Dataset {idx}:")
-
-        # Filename from metadata
-        source_file = ds.attrs.get("source_file", "Unknown")
-        summary_lines.append(f"  Source file: {source_file}")
-
-        # Time coverage
-        time_var = ds.get("TIME")
-        if time_var is not None:
-            time_start = pd.to_datetime(time_var.values[0]).strftime("%Y-%m-%d")
-            time_end = pd.to_datetime(time_var.values[-1]).strftime("%Y-%m-%d")
-            summary_lines.append(f"  Time coverage: {time_start} to {time_end}")
-        else:
-            summary_lines.append("  Time coverage: TIME variable not found")
-
-        # Dimensions
-        summary_lines.append("  Dimensions:")
-        for dim, size in ds.sizes.items():
-            summary_lines.append(f"    - {dim}: {size}")
-
-        # Variables
-        summary_lines.append("  Variables:")
-        for var in ds.data_vars:
-            shape = ds[var].shape
-            summary_lines.append(f"    - {var}: shape {shape}")
-
-        summary_lines.append("")  # empty line between datasets
-
-    summary = "\n".join(summary_lines)
-
-    # Print to console
-    print(summary)
-
-    # Write to log
-    log_info("\n" + summary)
+    log_info("Loading %d EK80 file(s)", len(files))
+    return read_ek80(files)
