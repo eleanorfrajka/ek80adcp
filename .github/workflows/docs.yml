@@ -1,0 +1,51 @@
+name: Test documentation build
+
+on:
+  pull_request:
+    paths:
+      - '**.py'
+      - '**.ipynb'
+      - '**.rst'
+      - '**.md'
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
+
+    - name: Setup Micromamba
+      uses: mamba-org/setup-micromamba@v3
+      with:
+        environment-file: environment.yml
+        init-shell: bash
+        condarc: |
+          channels:
+            - conda-forge
+          channel_priority: strict
+          cache-environment: true
+
+    - name: Install package (editable)
+      shell: bash -l {0}
+      run: |
+        micromamba run -n template-project python -m pip install --upgrade pip
+        micromamba run -n template-project python -m pip install -e . --no-deps --force-reinstall
+
+    # Assumes that the notebook to be documented is located within notebooks/ and is called demo.ipynb
+    # In the example below, we've set `--ExecutePreprocessor.allow_errors=False` to fail if there are notebook errors
+    # For testing/development runs (when your code might have errors), you can set this flag to True.
+    - name: Build documentation
+      shell: bash -l {0}
+      run: |
+        set -e
+        micromamba run -n template-project jupyter nbconvert --to notebook --execute notebooks/demo.ipynb --output=demo-output.ipynb --ExecutePreprocessor.allow_errors=False
+        mv notebooks/*output.ipynb docs/source/
+        pushd docs
+        micromamba run -n template-project make clean html
+        popd
