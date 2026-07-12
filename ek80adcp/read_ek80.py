@@ -47,7 +47,9 @@ def _convert_time_values(raw_values: np.ndarray, units: str | None) -> np.ndarra
         datetimes = [base + timedelta(microseconds=int(v) // 1000) for v in raw_values]
         # Strip tzinfo before conversion: numpy datetime64 has no tz support
         # but the values are already in UTC, so no information is lost.
-        return np.array([d.replace(tzinfo=None) for d in datetimes], dtype="datetime64[us]")
+        return np.array(
+            [d.replace(tzinfo=None) for d in datetimes], dtype="datetime64[us]"
+        )
     cftime_dates = nc.num2date(raw_values, units=units, calendar="gregorian")
     return pd.to_datetime([str(d) for d in cftime_dates]).values
 
@@ -84,8 +86,12 @@ def _read_single_file(nc_path: Path) -> dict:
         time_var = mc["mean_time"]
         time_vals = _convert_time_values(time_var[:], getattr(time_var, "units", None))
 
-        depth_first = float(np.nanmedian(np.asarray(adcp["depth_first_sample_center"][:])))
-        depth_interval = float(np.nanmedian(np.asarray(adcp["vertical_sample_interval"][:])))
+        depth_first = float(
+            np.nanmedian(np.asarray(adcp["depth_first_sample_center"][:]))
+        )
+        depth_interval = float(
+            np.nanmedian(np.asarray(adcp["vertical_sample_interval"][:]))
+        )
 
     return {
         "vx": vx,

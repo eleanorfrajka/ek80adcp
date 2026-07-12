@@ -67,6 +67,7 @@ Options:
 | `-o DIR` | Output directory (created if absent) |
 | `--depth-max M` | Drop depth bins below M metres (e.g. `800`) |
 | `--time-bin OFFSET` | Resample to this interval, e.g. `60s`, `5min` (default: native 2 s) |
+| `--method mean\|median` | Averaging method when `--time-bin` is set (default: `mean`) |
 | `--plot` | Save a 3-panel Hovmöller PNG for each file |
 | `--skip-existing` | Skip files whose output already exists (safe to re-run) |
 
@@ -125,7 +126,7 @@ DAILY=/Volumes/Compartida/MIXSED2/EK80/EK80ADCP/daily
 
 # Step 1 – extract all raw files (skip any already done)
 ek80adcp extract "$RAW" -o "$OUT" \
-    --depth-max 800 --time-bin 60s --plot --skip-existing
+    --depth-max 800 --time-bin 60s --skip-existing
 
 # Step 2 – one NetCDF per day
 ek80adcp concat "$OUT" -o "$DAILY" --by-day --plot

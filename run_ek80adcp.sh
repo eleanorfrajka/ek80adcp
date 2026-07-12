@@ -10,11 +10,16 @@
 
 set -euo pipefail
 
-# ── Edit this one line for your system ───────────────────────────────────────
+# ── Edit this one line for your system (or set DATA_ROOT in the environment) ─
 # macOS (network drive):   /Volumes/Compartida/MIXSED2/EK80/EK80ADCP
 # Linux / WSL:             /mnt/d/MIXSED2/EK80/EK80ADCP
 # Git Bash on Windows:     /d/MIXSED2/EK80/EK80ADCP
-DATA_ROOT=/Volumes/Compartida/MIXSED2/EK80/EK80ADCP
+DATA_ROOT="${DATA_ROOT:-/Volumes/Compartida/MIXSED2/EK80/EK80ADCP}"
+if [[ ! -d "$DATA_ROOT" ]]; then
+  echo "DATA_ROOT not found: $DATA_ROOT" >&2
+  echo "Edit DATA_ROOT in this script or set it in the environment before running." >&2
+  exit 1
+fi
 # ─────────────────────────────────────────────────────────────────────────────
 
 RAW="$DATA_ROOT/files"
@@ -23,7 +28,13 @@ DAILY="$DATA_ROOT/daily"
 
 # Locate venv relative to this script so it works from any working directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/venv/bin/activate"
+VENV_ACTIVATE="$SCRIPT_DIR/venv/bin/activate"
+if [[ ! -f "$VENV_ACTIVATE" ]]; then
+  echo "Missing venv at $VENV_ACTIVATE" >&2
+  echo "Run: python -m venv venv && pip install -e ." >&2
+  exit 1
+fi
+source "$VENV_ACTIVATE"
 
 _elapsed() { local s=$(( SECONDS - $1 )); printf "%dm%02ds" $((s/60)) $((s%60)); }
 

@@ -35,14 +35,24 @@ def _find_nc_files(paths: list[str]) -> list[Path]:
         path = Path(p)
         candidates = sorted(path.glob("*.nc")) if path.is_dir() else [path]
         for f in candidates:
-            if f not in seen and f.suffix.lower() == ".nc" and f.stat().st_size > 0:
+            if f in seen or f.suffix.lower() != ".nc":
+                continue
+            try:
+                size = f.stat().st_size
+            except OSError as exc:
+                print(f"Warning: cannot stat {f}, skipping ({exc}).", file=sys.stderr)
+                continue
+            if size > 0:
                 seen.add(f)
                 files.append(f)
-    return files
+    return sorted(files)
 
 
 def _build_history(
-    input_path: Path, depth_max: float | None, time_bin: str | None
+    input_path: Path,
+    depth_max: float | None,
+    time_bin: str | None,
+    method: str = "mean",
 ) -> str:
     """Build a CF-convention history string for the processing step.
 
@@ -54,6 +64,8 @@ def _build_history(
         ``--depth-max`` value used, or ``None`` if not applied.
     time_bin : str or None
         ``--time-bin`` value used, or ``None`` if not applied.
+    method : str, optional
+        Averaging method (``"mean"`` or ``"median"``). Default ``"mean"``.
 
     Returns
     -------
@@ -67,6 +79,7 @@ def _build_history(
         parts.append(f"--depth-max {depth_max}")
     if time_bin is not None:
         parts.append(f"--time-bin {time_bin}")
+        parts.append(f"--method {method}")
     parts.append(input_path.name)
     timestamp = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
     return f"{timestamp}: {' '.join(parts)}"
@@ -136,6 +149,7 @@ def _extract_one(
     output_path: Path,
     depth_max: float | None,
     time_bin: str | None,
+    method: str = "mean",
     plot: bool = False,
 ) -> dict:
     """Extract velocity data from one EK80 file and write a condensed NetCDF.
@@ -152,6 +166,9 @@ def _extract_one(
     time_bin : str or None
         Pandas offset alias for time averaging (e.g. ``"60s"``, ``"5min"``).
         ``None`` keeps the native 2-second resolution.
+    method : str, optional
+        Averaging method when ``time_bin`` is set: ``"mean"`` (default) or
+        ``"median"``.
     plot : bool, optional
         If ``True``, save a Hovmöller PNG alongside the NetCDF.
 
@@ -167,9 +184,14 @@ def _extract_one(
         ds = ds.sel(depth=slice(None, depth_max))
 
     if time_bin is not None:
-        ds = ds.resample(time=time_bin).mean(skipna=True)
+        resampled = ds.resample(time=time_bin)
+        ds = (
+            resampled.mean(skipna=True)
+            if method == "mean"
+            else resampled.median(skipna=True)
+        )
 
-    history_entry = _build_history(input_path, depth_max, time_bin)
+    history_entry = _build_history(input_path, depth_max, time_bin, method)
     existing = ds.attrs.get("history", "")
     ds.attrs["history"] = (
         f"{existing}\n{history_entry}".strip() if existing else history_entry
@@ -179,7 +201,12 @@ def _extract_one(
     ds.to_netcdf(output_path)
 
     if plot:
-        _plot_hovmoller(ds, output_path)
+        try:
+            _plot_hovmoller(ds, output_path)
+        except Exception as exc:
+            print(
+                f"Warning: plot failed for {output_path.name}: {exc}", file=sys.stderr
+            )
 
     return {
         "input": str(input_path),
@@ -262,7 +289,9 @@ def cmd_extract(args: argparse.Namespace) -> int:
 
         print(f"extract  {f.name} ...", end=" ", flush=True)
         try:
-            result = _extract_one(f, out, args.depth_max, args.time_bin, args.plot)
+            result = _extract_one(
+                f, out, args.depth_max, args.time_bin, args.method, args.plot
+            )
             result["processed_at"] = datetime.now(UTC).isoformat()
             manifest["files"].append(result)
             _save_manifest(manifest_path, manifest)
@@ -332,46 +361,53 @@ def _concat_group(group_files: list[Path], output_path: Path, plot: bool) -> Non
         If ``True``, save a Hovmöller PNG alongside the NetCDF.
 
     """
-    datasets = [xr.open_dataset(f) for f in group_files]
+    raw_datasets = [xr.open_dataset(f) for f in group_files]
+    try:
+        # The depth coordinate varies slightly between raw files (float precision
+        # in depth_first_sample_center and vertical_sample_interval), so a plain
+        # concat produces a union depth axis (outer join) that is 3× too large and
+        # mostly NaN.  Fix: truncate all datasets to the shortest depth profile and
+        # assign the first file's depth values so every dataset has an identical
+        # coordinate before concatenation.
+        datasets = raw_datasets
+        if len(datasets) > 1:
+            min_depth = min(ds.sizes["depth"] for ds in datasets)
+            depth_ref = datasets[0].depth.values[:min_depth]
+            datasets = [
+                ds.isel(depth=slice(None, min_depth)).assign_coords(depth=depth_ref)
+                for ds in datasets
+            ]
 
-    # The depth coordinate varies slightly between raw files (float precision
-    # in depth_first_sample_center and vertical_sample_interval), so a plain
-    # concat produces a union depth axis (outer join) that is 3× too large and
-    # mostly NaN.  Fix: truncate all datasets to the shortest depth profile and
-    # assign the first file's depth values so every dataset has an identical
-    # coordinate before concatenation.
-    if len(datasets) > 1:
-        min_depth = min(ds.sizes["depth"] for ds in datasets)
-        depth_ref = datasets[0].depth.values[:min_depth]
-        datasets = [
-            ds.isel(depth=slice(None, min_depth)).assign_coords(depth=depth_ref)
-            for ds in datasets
-        ]
+        ds = xr.concat(datasets, dim="time")
+        ds = ds.sortby("time")
 
-    ds = xr.concat(datasets, dim="time")
-    ds = ds.sortby("time")
+        source_names = ", ".join(f.name for f in group_files)
+        timestamp = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+        history_entry = f"{timestamp}: ek80adcp concat {source_names}"
+        existing = ds.attrs.get("history", "")
+        ds.attrs["history"] = (
+            f"{existing}\n{history_entry}".strip() if existing else history_entry
+        )
 
-    source_names = ", ".join(f.name for f in group_files)
-    timestamp = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
-    history_entry = f"{timestamp}: ek80adcp concat {source_names}"
-    existing = ds.attrs.get("history", "")
-    ds.attrs["history"] = (
-        f"{existing}\n{history_entry}".strip() if existing else history_entry
-    )
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        ds.to_netcdf(output_path)
+        print(
+            f"  saved {output_path.name}  "
+            f"(time={ds.sizes['time']}, depth={ds.sizes['depth']})"
+        )
 
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    ds.to_netcdf(output_path)
-    print(
-        f"  saved {output_path.name}  "
-        f"(time={ds.sizes['time']}, depth={ds.sizes['depth']})"
-    )
-
-    if plot:
-        _plot_hovmoller(ds, output_path)
-        print(f"  plot  {output_path.with_suffix('.png').name}")
-
-    for d in datasets:
-        d.close()
+        if plot:
+            try:
+                _plot_hovmoller(ds, output_path)
+                print(f"  plot  {output_path.with_suffix('.png').name}")
+            except Exception as exc:
+                print(
+                    f"Warning: plot failed for {output_path.name}: {exc}",
+                    file=sys.stderr,
+                )
+    finally:
+        for d in raw_datasets:
+            d.close()
 
 
 def cmd_concat(args: argparse.Namespace) -> int:
@@ -415,7 +451,11 @@ def cmd_concat(args: argparse.Namespace) -> int:
                 file=sys.stderr,
             )
 
-        prefix = _stem_prefix(files[0])
+        dated_files = [f for f in files if _date_key(f)]
+        if not dated_files:
+            print("ek80adcp concat --by-day: no dated files found.", file=sys.stderr)
+            return 1
+        prefix = _stem_prefix(dated_files[0])
         output_dir = output_path
         output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -484,6 +524,12 @@ def main() -> None:
             "Resample to this time interval, e.g. '60s' or '5min'. "
             "Default: keep native 2-second resolution."
         ),
+    )
+    ext.add_argument(
+        "--method",
+        default="mean",
+        choices=["mean", "median"],
+        help="Averaging method when --time-bin is set (default: mean).",
     )
     ext.add_argument(
         "--skip-existing",
