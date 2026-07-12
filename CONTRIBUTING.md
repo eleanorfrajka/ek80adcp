@@ -149,16 +149,6 @@ To build the documentation locally you need to install a few extra requirements:
 
 Once you have the extras installed, you can build the docs locally by navigating to the `docs/` directory and running `make clean html`. This command will create a directory called `build/` which contains the html files of the documentation. Open the file `docs/build/html/index.html` in your browser, and you will see the docs with your changes applied. After making more changes, just run make clean html again to rebuild the docs.
 
-## Development Roadmap
-
-For information about planned improvements and the development roadmap for this template, see [MODERNIZATION_PLAN.md](MODERNIZATION_PLAN.md). This document outlines:
-
-- Upcoming features and improvements
-- Best practices being incorporated
-- Comparison with other research software templates
-- Implementation priorities and timelines
-
-Contributors are welcome to help with any of the planned improvements or suggest new directions for the template.
 
 <!-- omit in toc -->
 ## Attribution

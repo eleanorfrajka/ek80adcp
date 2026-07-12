@@ -1,1 +1,1 @@
-"""Template project for oceanographic Python packages."""
+"""Tools for reading, condensing, and plotting EK80 ADCP velocity data."""
