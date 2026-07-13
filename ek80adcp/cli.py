@@ -658,7 +658,7 @@ def main() -> None:
     )
     cat.add_argument(
         "--by-time-range",
-        tpye=str,
+        type=str,
         metavar="TIME-RANGE",
         help=(
             "Group input files by time range and write as one NetCDF file."
