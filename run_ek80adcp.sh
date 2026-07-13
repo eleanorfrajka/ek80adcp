@@ -23,8 +23,8 @@ fi
 # ─────────────────────────────────────────────────────────────────────────────
 
 RAW="$DATA_ROOT/files"
-EXTRACTED="$DATA_ROOT/extracted"
-DAILY="$DATA_ROOT/daily"
+EXTRACTED="$DATA_ROOT/test/extracted"
+DAILY="$DATA_ROOT/test/daily"
 
 # Locate venv relative to this script so it works from any working directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

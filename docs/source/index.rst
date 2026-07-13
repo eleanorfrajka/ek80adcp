@@ -6,6 +6,13 @@ EK80 ADCP: Documentation
 
 Welcome to the documentation for **ek80adcp** — Python tools for reading and processing EK80 ADCP data.
 
+.. note::
+
+   This package was developed for the *Odón de Buen* cruise (9–31 July 2026,
+   Reykjavik–Reykjavik). It is not exhaustively tested for robustness or edge
+   cases, and some parameters may be hard-coded for that cruise's data format
+   and directory structure.
+
 .. toctree::
    :maxdepth: 2
    :caption: Getting started

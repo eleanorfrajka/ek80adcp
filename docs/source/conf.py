@@ -18,7 +18,7 @@ year = datetime.datetime.now(tz=datetime.UTC).date().year
 
 # General information about the project.
 project = "ek80adcp"
-author = "Eleanor Frajka-Williams, FirstName LastName"
+author = "Eleanor Frajka-Williams"
 copyright = f"{year}, {author}"
 release = "v0.0.0"
 
@@ -35,7 +35,6 @@ extensions = [
 ]
 
 # Configure nbsphinx for example notebooks
-# Allow errors in notebooks (useful for template examples)
 nbsphinx_allow_errors = True
 nbsphinx_execute = "never"
 nbsphinx_kernel_name = "python3"
@@ -142,9 +141,9 @@ latex_elements = {
 latex_documents = [
     (
         "index",
-        "ReadtheDocsTemplate.tex",
-        "Read the Docs Template Documentation",
-        "Read the Docs",
+        "ek80adcp.tex",
+        "ek80adcp Documentation",
+        author,
         "manual",
     ),
 ]

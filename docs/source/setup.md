@@ -1,16 +1,14 @@
 # Getting Started: Setup and Installation
 
-This guide walks you through the setup process when starting a new project using this template, or contributing to one based on it. It includes instructions for both terminal users and those using GitHub Desktop.
+This guide walks you through getting started with ek80adcp. It includes instructions for both terminal users and those using GitHub Desktop.
 
 ---
 
 ## Step 1: Get the Repository
 
-You have two choices, depending on whether you're making a copy for your own use or contributing to someone else's.
+You have two choices, depending on whether you want a local copy or are contributing changes.
 
-### Option A: Use this template for your own project
-
-You're making a fresh project based on this template.
+### Option A: Clone the repository
 
 #### a. Clone the repository to your computer
 From a **terminal**:
@@ -25,15 +23,8 @@ Or in your **browser**:
 
 > 💡 You can rename the folder after cloning.
 
-#### b. (Optional) Change the remote origin
-If you want to push to your own GitHub repository, create a new repo on [GitHub.com](https://github.com) and set it as the remote:
-```bash
-git remote set-url origin https://github.com/YOUR_USERNAME/new-repo-name.git
-git push -u origin main
-```
-
-### Option B: Contribute to someone else's project
-See the GitHub documentation for full instructions on forking and branching when contributing to another repository.
+### Option B: Fork and contribute
+See the GitHub documentation for full instructions on forking and branching when contributing to this repository.
 
 ---
 
