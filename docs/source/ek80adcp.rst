@@ -1,4 +1,4 @@
-i:mod:`ek80adcp API`
+:mod:`ek80adcp API`
 ---------------------------
 
 .. automodule:: ek80adcp.readers
