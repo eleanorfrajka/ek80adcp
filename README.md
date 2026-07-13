@@ -1,117 +1,173 @@
 # ek80adcp
 
-> 🧪 A modern Python template for scientific projects — with clean code, automated tests, documentation, citation, and publication tools, ready out-of-the-box.
+Python tools for reading, condensing, and plotting EK80 ADCP velocity data.
 
-This repository is designed to help researchers and developers (especially in the [UHH Experimental Oceanography group](http://eleanorfrajka.com) quickly launch well-structured Python projects with consistent tooling for open science.
-
-📘 Full documentation available at:  
-👉 https://eleanorfrajka.github.io/ek80adcp/
-
----
-
-## 🚀 What's Included
-
-- ✅ Example Python package layout: `ek80adcp/*.py`
-- 📓 Jupyter notebook demo: `notebooks/demo.ipynb`
-- 📄 Markdown and Sphinx-based documentation in `docs/`
-- 🔍 Tests with `pytest` in `tests/`, CI with GitHub Actions
-- 🎨 Code style via `black`, `ruff`, `pre-commit`
-- 📦 Package config via `pyproject.toml` + optional PyPI release workflow
-- 🧾 Machine-readable citation: `CITATION.cff`
+Raw EK80 NetCDF files are typically 1–2 GB each and contain full-resolution
+backscatter, attitude, and raw acoustic data alongside the velocity profiles.
+This package extracts only the velocity components (vx, vy, vz), position
+(lon, lat), and time into compact files that are ~1000× smaller.
 
 ---
 
-## Project Structure
-
-```
-ek80adcp/
-├── .github/workflows/          # CI/CD for tests, docs, PyPI
-├── docs/                       # Sphinx documentation  
-├── notebooks/                  # Example Jupyter notebooks
-├── ek80adcp/           # Main Python package
-│   ├── tools.py
-│   ├── readers.py  
-│   ├── plotters.py
-│   └── utilities.py
-├── tests/                      # Pytest test suite
-├── pyproject.toml              # Modern packaging config
-├── environment.yml             # Conda environment
-├── requirements.txt            # Core dependencies
-├── requirements-dev.txt        # Development dependencies
-└── CITATION.cff                # Academic citation
-```
-
-## Key Features
-
-- 📦 **Modern Python packaging** with `pyproject.toml` and automated versioning
-- 🧪 **Testing setup** with pytest and pre-commit hooks for code quality  
-- 📚 **Documentation** with Sphinx, supporting both Markdown and reStructuredText
-- 🔄 **CI/CD workflows** for automated testing, docs building, and PyPI publishing
-- 📊 **Scientific Python** integration with numpy, pandas, xarray, matplotlib
-- 🌍 **Environment management** with both pip and conda/mamba support
-
-
----
-
-## 🔧 Quickstart
-
-Install in development mode:
+## Installation
 
 ```bash
 git clone https://github.com/eleanorfrajka/ek80adcp.git
 cd ek80adcp
-
-# Option A: Using conda/mamba (recommended)
-conda env create -f environment.yml
-conda activate ek80adcp
-pip install -e .
-
-# Option B: Using pip
+python -m venv venv
+source venv/bin/activate          # Windows: venv\Scripts\activate
 pip install -e ".[dev]"
 ```
 
-To run tests:
+After installation the `ek80adcp` command is available in the activated
+environment.
+
+---
+
+## File naming convention
+
+Raw EK80 files follow the pattern:
+
+```
+{cruise}-D{YYYYMMDD}-T{HHMMSS}.nc
+```
+
+Example: `DSMIXSED2-D20260709-T161720.nc`
+
+- `DSMIXSED2` — cruise/ship identifier (prefix)
+- `D20260709` — UTC date the file starts
+- `T161720`   — UTC time the file starts
+
+Each file covers about 10 minutes at 2-second ping resolution with ~40 000
+depth bins at 2.5 cm vertical spacing (roughly 14–800 m depth range).
+
+---
+
+## 3-step workflow
+
+### Step 1 — Extract (one condensed file per raw file)
+
+Reads each raw file, subsets to a maximum depth, resamples in time, and
+writes a compact NetCDF. Processing parameters are recorded in the `history`
+attribute. Use `--plot` to save a Hovmöller PNG alongside each file.
 
 ```bash
+ek80adcp extract /path/to/raw/ \
+    -o /path/to/out/ \
+    --depth-max 800 \
+    --time-bin 60s \
+    --plot
+```
+
+Options:
+
+| Flag | Description |
+|---|---|
+| `FILE_OR_DIR` | One or more raw `.nc` files, or a directory of them |
+| `-o DIR` | Output directory (created if absent) |
+| `--depth-max M` | Drop depth bins below M metres (e.g. `800`) |
+| `--time-bin OFFSET` | Resample to this interval, e.g. `60s`, `5min` (default: native 2 s) |
+| `--method mean\|median` | Averaging method when `--time-bin` is set (default: `mean`) |
+| `--plot` | Save a 3-panel Hovmöller PNG for each file |
+| `--skip-existing` | Skip files whose output already exists (safe to re-run) |
+
+Output names match the input names; a `manifest.json` is written to the
+output directory recording what was processed and with what settings.
+
+---
+
+### Step 2 — Concatenate by day (one NetCDF per calendar day)
+
+Groups the extracted files by the `D{YYYYMMDD}` token in their names and
+writes one combined file per day, named `{prefix}-D{YYYYMMDD}.nc`.
+
+```bash
+ek80adcp concat /path/to/out/ \
+    -o /path/to/daily/ \
+    --by-day \
+    --plot
+```
+
+Options:
+
+| Flag | Description |
+|---|---|
+| `FILE_OR_DIR` | Extracted `.nc` files, or a directory of them |
+| `-o DIR` | Output directory for daily files |
+| `--by-day` | Group by date and write one file per day |
+| `--plot` | Save a Hovmöller PNG for each daily file |
+
+---
+
+### Step 3 — Concatenate all days into one file
+
+```bash
+ek80adcp concat /path/to/daily/ \
+    -o /path/to/DSMIXSED2-combined.nc \
+    --plot
+```
+
+Options:
+
+| Flag | Description |
+|---|---|
+| `FILE_OR_DIR` | Daily `.nc` files, or a directory of them |
+| `-o FILE` | Single output NetCDF |
+| `--plot` | Save a Hovmöller PNG of the full dataset |
+
+---
+
+## Full example (MIXSED2 cruise)
+
+```bash
+RAW=/Volumes/Compartida/MIXSED2/EK80/EK80ADCP/files
+OUT=/Volumes/Compartida/MIXSED2/EK80/EK80ADCP/extracted
+DAILY=/Volumes/Compartida/MIXSED2/EK80/EK80ADCP/daily
+
+# Step 1 – extract all raw files (skip any already done)
+ek80adcp extract "$RAW" -o "$OUT" \
+    --depth-max 800 --time-bin 60s --skip-existing
+
+# Step 2 – one NetCDF per day
+ek80adcp concat "$OUT" -o "$DAILY" --by-day --plot
+
+# Step 3 – everything in one file
+ek80adcp concat "$DAILY" -o "$DAILY/DSMIXSED2-combined.nc" --plot
+```
+
+---
+
+## Output variables
+
+Each extracted NetCDF contains:
+
+| Variable | Dimensions | Units | Description |
+|---|---|---|---|
+| `vx` | time, depth | m s⁻¹ | Eastward velocity |
+| `vy` | time, depth | m s⁻¹ | Northward velocity |
+| `vz` | time, depth | m s⁻¹ | Downward velocity |
+| `lon` | time | degrees_east | Platform longitude |
+| `lat` | time | degrees_north | Platform latitude |
+
+Global attributes include `history` (CF-convention processing log) and
+`source_files`.
+
+---
+
+## Development
+
+```bash
+# Run tests
 pytest
+
+# Lint and format
+ruff check --fix .
+ruff format .
+
+# Type checking
+mypy ek80adcp/
+
+# Add a changelog entry
+# (fragment type: feature / bugfix / doc / removal / misc)
+echo "Your change description." > changelog.d/<issue>.<type>.md
 ```
-
-To build the documentation locally:
-
-```bash
-cd docs
-make html
-```
-
----
-
-## 📚 Learn More
-
-- [Setup instructions](https://eleanorfrajka.github.io/ek80adcp/setup.html)
-- [Solo Git workflow](https://eleanorfrajka.github.io/ek80adcp/gitworkflow_solo.html)
-- [Fork-based collaboration](https://eleanorfrajka.github.io/ek80adcp/gitcollab_v2.html)
-- [Building docs](https://eleanorfrajka.github.io/ek80adcp/build_docs.html)
-- [Publishing to PyPI](https://eleanorfrajka.github.io/ek80adcp/pypi_guide.html)
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome!  Please also consider adding an [issue](https://github.com/eleanorfrajka/ek80adcp/issues) when something isn't clear.
-
-See the [customisation checklist](customisation_checklist.md) to adapt this template to your own project.
-
-For information about planned improvements and the development roadmap, see [MODERNIZATION_PLAN.md](MODERNIZATION_PLAN.md).
-
----
-
-## Future plans
-
-I'll also (once I know how) add instructions for how to publish the package to conda forge, so that folks who use conda or mamba for environment management can also install that way.
-
----
-
-## 📣 Citation
-
-This repository includes a `CITATION.cff` file so that users of this template can include one in their own project.  
-There is no need to cite this repository directly.

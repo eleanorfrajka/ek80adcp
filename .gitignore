@@ -1,8 +1,10 @@
 */_version.py
 data/*.nc
 
-
 logs/*log
+
+# macOS
+.DS_Store
 
 # VSCode settings
 .vscode/*
@@ -79,6 +81,7 @@ instance/
 
 # Sphinx documentation
 docs/_build/
+docs/build/
 
 # PyBuilder
 .pybuilder/
