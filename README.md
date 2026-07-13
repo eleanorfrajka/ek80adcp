@@ -2,6 +2,11 @@
 
 Python tools for reading, condensing, and plotting EK80 ADCP velocity data.
 
+> **Note:** This package was developed quickly for the *Odón de Buen* cruise
+> (9–31 July 2026, Reykjavik–Reykjavik). It is not exhaustively tested for
+> robustness or edge cases, and some parameters may be hard-coded for that
+> cruise's data format and directory structure.
+
 Raw EK80 NetCDF files are typically 1–2 GB each and contain full-resolution
 backscatter, attitude, and raw acoustic data alongside the velocity profiles.
 This package extracts only the velocity components (vx, vy, vz), position

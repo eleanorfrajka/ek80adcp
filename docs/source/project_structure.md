@@ -1,17 +1,14 @@
-# What’s in This Template Project?
+# What’s in This Repository?
 
-> 🐍 This project is designed for a **Python-based code repository**. It includes features to help you manage, test, document, and share your code.
-
-Below is an overview of the files and folders you’ll find in the `ek80adcp`, along with what they do and why they’re useful. If you're new to GitHub or Python packaging, this is your orientation.
+Below is an overview of the files and folders in `ek80adcp`, along with what they do and why they’re useful.
 
 ---
 
 ## 🔍 Project Structure Overview
 
-📷 *This is what the template looks like when you clone or fork it:*
 # 📁 `ek80adcp` File Structure
 
-A minimal, modular Python project structure for collaborative research and reproducible workflows.
+A minimal, modular Python project structure for reading and processing EK80 ADCP data.
 
 ```
 ek80adcp/
@@ -19,7 +16,6 @@ ek80adcp/
 │   ├── __init__.py               # [core] Makes this a Python package
 │   ├── plotters.py               # [core] Functions to plot data
 │   ├── readers.py                # [core] Functions to read raw data into xarray datasets
-│   ├── read_rapid.py             # [core] Example for a separate module for a specific dataset
 │   ├── writers.py                # [core] Functions to write data (e.g., to NetCDF)
 │   ├── tools.py                  # [core] Utilities for unit conversion, calculations, etc.
 │   ├── logger.py                 # [core] Structured logging configuration for reproducible runs
@@ -49,10 +45,10 @@ ek80adcp/
 │   └── ...
 │
 ├── data/                         # [data]
-│   └── moc_transports.nc         # [data] Example data file used for the template.
+│   └── {cruise}-D{YYYYMMDD}-T{HHMMSS}.nc  # [data] Raw EK80 files (gitignored)
 │
 ├── logs/                         # [core] Log output from structured logging
-│   └── amocarray_*.log           # [core]
+│   └── EK80_*_read.log           # [core]
 │
 ├── .github/                      # [ci] GitHub-specific workflows (e.g., Actions)
 │   ├── workflows/
@@ -73,7 +69,7 @@ ek80adcp/
 └── LICENSE                       # [meta] Open source license (e.g., MIT as default)
 ```
 
-The tags above give an indication of what parts of this template project are used for what purposes, where:
+The tags above give an indication of what parts of this project are used for what purposes, where:
 - `# [core]` – Scientific core logic or core functions used across the project.
 <!--- `# [api]` – Public-facing functions or modules users are expected to import and use.-->
 - `# [docs]` – Documentation sources, configs, and assets for building project docs.
@@ -99,7 +95,7 @@ The tags above give an indication of what parts of this template project are use
 ## 🔰 The Basics (Always Included)
 
 - **`README.md`** – The first thing people see when they visit your GitHub repo. Use this to explain what your project is, how to install it, and how to get started.
-- **`LICENSE`** – Explains what others are allowed to do with your code. This template uses the **MIT License**:
+- **`LICENSE`** – Explains what others are allowed to do with your code. This project uses the **MIT License**:
   - ✅ Very permissive — allows commercial and private use, modification, and distribution.
   - 🔗 More license info: [choosealicense.com](https://choosealicense.com/)
 - **`.gitignore`** – Tells Git which files/folders to ignore (e.g., system files, data outputs).
@@ -146,7 +142,7 @@ The tags above give an indication of what parts of this template project are use
 
 ## 🤖 Automation Features
 
-This template includes several automation features to streamline development:
+This project includes several automation features to streamline development:
 
 ### Dependabot (Dependency Updates)
 - **File**: `.github/dependabot.yml`
@@ -174,11 +170,9 @@ This template includes several automation features to streamline development:
 
 ## ✅ Summary
 
-This template is a starting point for research or open-source Python projects. It supports:
-- Clean project structure
-- Reproducible environments
-- Easy testing
-- Auto-publishing documentation
-- Optional packaging for PyPI
-
-> 💡 Use what you need. Delete what you don’t. This is your scaffold for doing good, shareable science/code.
+**ek80adcp** is a Python package for reading, condensing, and plotting EK80 ADCP velocity data. It provides:
+- Clean, modular structure (reading, writing, plotting, tools)
+- Reproducible environments and dependency management
+- Automated testing and CI via GitHub Actions
+- Published documentation on GitHub Pages
+- Installable as a package from PyPI
