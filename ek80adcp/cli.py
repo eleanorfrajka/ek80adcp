@@ -503,7 +503,7 @@ def cmd_concat(args: argparse.Namespace) -> int:
             if key:
                 date = "D" + str(_date_key(f))
                 time = "T" + str(_time_key(f))
-                dt = datetime.strptime(date + "--" + time, "D%Y%m%d-T%H%M%S")
+                dt = datetime.strptime(date + "-" + time, "D%Y%m%d-T%H%M%S")
                 if start_dt <= dt <= end_dt:
                     in_time_range.append(f)
             else:
