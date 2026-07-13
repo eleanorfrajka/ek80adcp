@@ -307,7 +307,7 @@ def cmd_extract(args: argparse.Namespace) -> int:
 
 
 _DATE_RE = re.compile(r"D(\d{8})")
-_TIME_RE = re.compile(r"T(\d{8})")
+_TIME_RE = re.compile(r"T(\d{6})")
 
 
 def _date_key(path: Path) -> str | None:
@@ -499,11 +499,10 @@ def cmd_concat(args: argparse.Namespace) -> int:
         end_dt = datetime.strptime(end_dt, "D%Y%m%d-T%H%M%S")
 
         for f in files:
-            key = _date_key(f)
-            if key:
-                date = "D" + str(_date_key(f))
-                time = "T" + str(_time_key(f))
-                dt = datetime.strptime(date + "-" + time, "D%Y%m%d-T%H%M%S")
+            date_key = _date_key(f)
+            time_key = _time_key(f)
+            if date_key and time_key and "--" not in f.stem:
+                dt = datetime.strptime(f"D{date_key}-T{time_key}", "D%Y%m%d-T%H%M%S")
                 if start_dt <= dt <= end_dt:
                     in_time_range.append(f)
             else:
@@ -526,9 +525,9 @@ def cmd_concat(args: argparse.Namespace) -> int:
         output_dir = output_path
         output_dir.mkdir(parents=True, exist_ok=True)
 
-        print(
-            f"By-time-range concat:{len(in_time_range)} files found in time range {args.by_time_range}."
-        )
+        print(f"By-time-range concat:{len(in_time_range)} files found in time range.")
+        for f in in_time_range:
+            print(f.stem)
         time_range_out = output_dir / f"{prefix}-{args.by_time_range}.nc"
         print(
             f"  Time-range {args.by_time_range}: {len(in_time_range)} file(s) ...",
