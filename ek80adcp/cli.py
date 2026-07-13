@@ -307,6 +307,7 @@ def cmd_extract(args: argparse.Namespace) -> int:
 
 
 _DATE_RE = re.compile(r"D(\d{8})")
+_TIME_RE = re.compile(r"T(\d{8})")
 
 
 def _date_key(path: Path) -> str | None:
@@ -326,6 +327,26 @@ def _date_key(path: Path) -> str | None:
 
     """
     m = _DATE_RE.search(path.stem)
+    return m.group(1) if m else None
+
+
+def _time_key(path: Path) -> str | None:
+    """Return the HHMMSS string embedded in a filename, or ``None``.
+
+    Parameters
+    ----------
+    path : Path
+        File whose stem contains ``T{HHMMSS}``, e.g.
+        ``DSMIXSED2-D20260709-T161720.nc``.
+
+    Returns
+    -------
+    str or None
+        Eight-digit date string, e.g. ``"20260709"``, or ``None`` if the
+        pattern is absent.
+
+    """
+    m = _TIME_RE.search(path.stem)
     return m.group(1) if m else None
 
 
@@ -466,9 +487,59 @@ def cmd_concat(args: argparse.Namespace) -> int:
                 f"  day {date_str}: {len(day_files)} file(s) ...", end=" ", flush=True
             )
             _concat_group(sorted(day_files), day_out, args.plot)
+
+    elif args.by_time_range:
+        in_time_range: list[Path] = []
+        group: dict[str, list[Path]] = {}
+        undated: list[Path] = []
+
+        start_dt = args.by_time_range.split("--")[0]
+        start_dt = datetime.strptime(start_dt, "D%Y%m%d-T%H%M%S")
+        end_dt = args.by_time_range.split("--")[1]
+        end_dt = datetime.strptime(end_dt, "D%Y%m%d-T%H%M%S")
+
+        for f in files:
+            key = _date_key(f)
+            if key:
+                date = "D" + str(_date_key(f))
+                time = "T" + str(_time_key(f))
+                dt = datetime.strptime(date + "--" + time, "D%Y%m%d-T%H%M%S")
+                if start_dt <= dt <= end_dt:
+                    in_time_range.append(f)
+            else:
+                undated.append(f)
+
+        group[args.by_time_range] = in_time_range
+
+        if undated:
+            print(
+                f"Warning: {len(undated)} file(s) lack a D{{YYYYMMDD}} token "
+                "and will be skipped.",
+                file=sys.stderr,
+            )
+
+        dated_files = [f for f in files if _date_key(f)]
+        if not dated_files:
+            print("ek80adcp concat --by-day: no dated files found.", file=sys.stderr)
+            return 1
+        prefix = _stem_prefix(dated_files[0])
+        output_dir = output_path
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        print(
+            f"By-time-range concat:{len(in_time_range)} files found in time range {args.by_time_range}."
+        )
+        time_range_out = output_dir / f"{prefix}-{args.by_time_range}.nc"
+        print(
+            f"  Time-range {args.by_time_range}: {len(in_time_range)} file(s) ...",
+            end=" ",
+            flush=True,
+        )
+        _concat_group(in_time_range, time_range_out, args.plot)
+
     else:
         print(f"Concatenating {len(files)} file(s) ...", end=" ", flush=True)
-        _concat_group(files, output_path, args.plot)
+        _concat_group(sorted(files), output_path, args.plot)
 
     return 0
 
@@ -583,6 +654,15 @@ def main() -> None:
         help=(
             "Group input files by calendar day and write one NetCDF per day, "
             "named {prefix}-D{YYYYMMDD}.nc, into the -o directory."
+        ),
+    )
+    cat.add_argument(
+        "--by-time-range",
+        tpye=str,
+        metavar="TIME-RANGE",
+        help=(
+            "Group input files by time range and write as one NetCDF file."
+            "Time range must be specified as a string e.g.: 'DYYYYMMDD-THHMMSS--DYYYYMMDD-THHMMSS.'"
         ),
     )
     cat.add_argument(
