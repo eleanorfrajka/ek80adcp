@@ -342,7 +342,7 @@ def _time_key(path: Path) -> str | None:
     Returns
     -------
     str or None
-        Eight-digit date string, e.g. ``"20260709"``, or ``None`` if the
+        Six-digit time string, e.g. ``"161720"``, or ``None`` if the
         pattern is absent.
 
     """
@@ -493,10 +493,28 @@ def cmd_concat(args: argparse.Namespace) -> int:
         group: dict[str, list[Path]] = {}
         undated: list[Path] = []
 
-        start_dt = args.by_time_range.split("--")[0]
-        start_dt = datetime.strptime(start_dt, "D%Y%m%d-T%H%M%S")
-        end_dt = args.by_time_range.split("--")[1]
-        end_dt = datetime.strptime(end_dt, "D%Y%m%d-T%H%M%S")
+        start_str, sep, end_str = args.by_time_range.partition("--")
+        if not sep or not start_str or not end_str or "--" in end_str:
+            print(
+                "ek80adcp concat --by-time-range: TIME-RANGE must be 'DYYYYMMDD-THHMMSS--DYYYYMMDD-THHMMSS'.",
+                file=sys.stderr,
+            )
+            return 1
+        try:
+            start_dt = datetime.strptime(start_str, "D%Y%m%d-T%H%M%S")
+            end_dt = datetime.strptime(end_str, "D%Y%m%d-T%H%M%S")
+        except ValueError as exc:
+            print(
+                f"ek80adcp concat --by-time-range: invalid TIME-RANGE: {exc}",
+                file=sys.stderr,
+            )
+            return 1
+        if start_dt > end_dt:
+            print(
+                "ek80adcp concat --by-time-range: start must be <= end.",
+                file=sys.stderr,
+            )
+            return 1
 
         for f in files:
             date_key = _date_key(f)
@@ -512,14 +530,17 @@ def cmd_concat(args: argparse.Namespace) -> int:
 
         if undated:
             print(
-                f"Warning: {len(undated)} file(s) lack a D{{YYYYMMDD}} token "
+                f"Warning: {len(undated)} file(s) lack a D{{YYYYMMDD}}/T{{HHMMSS}} token or contain '--' "
                 "and will be skipped.",
                 file=sys.stderr,
             )
 
         dated_files = [f for f in files if _date_key(f)]
         if not dated_files:
-            print("ek80adcp concat --by-day: no dated files found.", file=sys.stderr)
+            print(
+                "ek80adcp concat --by-time-range: no dated files found.",
+                file=sys.stderr,
+            )
             return 1
         prefix = _stem_prefix(dated_files[0])
         output_dir = output_path
@@ -534,7 +555,7 @@ def cmd_concat(args: argparse.Namespace) -> int:
             end=" ",
             flush=True,
         )
-        _concat_group(in_time_range, time_range_out, args.plot)
+        _concat_group(sorted(in_time_range), time_range_out, args.plot)
 
     else:
         print(f"Concatenating {len(files)} file(s) ...", end=" ", flush=True)
@@ -660,8 +681,8 @@ def main() -> None:
         type=str,
         metavar="TIME-RANGE",
         help=(
-            "Group input files by time range and write as one NetCDF file."
-            "Time range must be specified as a string e.g.: 'DYYYYMMDD-THHMMSS--DYYYYMMDD-THHMMSS.'"
+            "Group input files by time range and write as one NetCDF file. "
+            "TIME-RANGE must be specified as: 'DYYYYMMDD-THHMMSS--DYYYYMMDD-THHMMSS'."
         ),
     )
     cat.add_argument(
