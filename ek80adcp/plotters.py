@@ -170,9 +170,12 @@ def plot_track_quiver(
     if depth_idx == "mean":
         u = ds["vx"].mean(dim="depth")
         v = ds["vy"].mean(dim="depth")
+        title = "EK80 ADCP current vectors depth mean"
     elif isinstance(depth_idx, int):
         u = ds["vx"].isel(depth=depth_idx).values
         v = ds["vy"].isel(depth=depth_idx).values
+        depth_m = float(ds.depth.values[depth_idx])
+        title = f"EK80 ADCP current vectors at {depth_m:.1f} m"
     else:
         raise ValueError(
             f"{depth_idx} has no valid value, must be either int or 'mean'!"
@@ -199,8 +202,7 @@ def plot_track_quiver(
         scale=1,
         width=0.003,
     )
-    depth_m = float(ds.depth.values[depth_idx])
-    ax.set_title(f"EK80 ADCP current vectors at {depth_m:.1f} m")
+    ax.set_title(title)
     ax.set_xlabel("Longitude (°E)")
     ax.set_ylabel("Latitude (°N)")
     ax.grid(visible=True, alpha=0.3)
