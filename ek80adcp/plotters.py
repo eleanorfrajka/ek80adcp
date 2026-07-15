@@ -64,8 +64,8 @@ def plot_velocity_at_depth(
 
 def plot_hovmoller(
     ds: xr.Dataset,
-    vmin: float = -0.3,
-    vmax: float = 0.3,
+    vmin: tuple[float, float, float] | None = None,
+    vmax: tuple[float, float, float] | None = None,
     figsize: tuple[float, float] = (15, 18),
 ) -> tuple[Any, Any]:
     """Plot depth-time Hovmoller diagrams for vx, vy, and vz.
@@ -99,6 +99,20 @@ def plot_hovmoller(
         ("vy", "Northward (vy)"),
         ("vz", "Downward (vz)"),
     ]
+    if vmin is not None and vmax is not None:
+        min_max = {
+            "vx": (vmin[0], vmax[0]),
+            "vy": (vmin[1], vmax[1]),
+            "vz": (vmin[2], vmax[2]),
+        }
+    else:
+        min_max = {}
+        for var in ["vx", "vy", "vz"]:
+            max_value = ds[var].max()
+            min_value = ds[var].min()
+            if abs(max_value) >= abs(min_value):
+                min_value = max_value
+            min_max[var] = (min_value, max_value)
 
     for ax, (var, label) in zip(axes, components, strict=True):
         data = ds[var].values.T  # (depth, time)
@@ -107,8 +121,8 @@ def plot_hovmoller(
             depths,
             np.ma.masked_invalid(data),
             cmap=cmocean.cm.balance,
-            vmin=vmin,
-            vmax=vmax,
+            vmin=min_max[var][0],
+            vmax=min_max[var][1],
             shading="auto",
         )
         ax.set_title(label)
