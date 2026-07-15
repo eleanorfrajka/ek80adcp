@@ -143,7 +143,7 @@ def plot_hovmoller(
 
 def plot_track_quiver(
     ds: xr.Dataset,
-    depth_idx: int = 0,
+    depth_idx: int | str = 0,
     step: int | None = None,
     figsize: tuple[float, float] = (10, 10),
 ) -> tuple[Any, Any]:
@@ -167,10 +167,19 @@ def plot_track_quiver(
     """
     _use_style()
 
+    if depth_idx == "mean":
+        u = ds["vx"].mean(dim="depth")
+        v = ds["vy"].mean(dim="depth")
+    elif isinstance(depth_idx, int):
+        u = ds["vx"].isel(depth=depth_idx).values
+        v = ds["vy"].isel(depth=depth_idx).values
+    else:
+        raise ValueError(
+            f"{depth_idx} has no valid value, must be either int or 'mean'!"
+        )
+
     lon = ds["lon"].values
     lat = ds["lat"].values
-    u = ds["vx"].isel(depth=depth_idx).values
-    v = ds["vy"].isel(depth=depth_idx).values
 
     mask = np.isfinite(lon) & np.isfinite(lat) & np.isfinite(u) & np.isfinite(v)
     lon, lat, u, v = lon[mask], lat[mask], u[mask], v[mask]
