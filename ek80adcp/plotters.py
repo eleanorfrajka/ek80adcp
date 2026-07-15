@@ -74,10 +74,10 @@ def plot_hovmoller(
     ----------
     ds : xr.Dataset
         Dataset with ``vx``, ``vy``, ``vz`` and ``time``, ``depth`` coords.
-    vmin : float, optional
-        Colour scale minimum. Default ``-0.3``.
-    vmax : float, optional
-        Colour scale maximum. Default ``0.3``.
+    vmin : tuple of float or None, optional
+        Colour scale minimum for each variable. Default is taken from the largest min or max value of the variable to create a symetrical colorbar.
+    vmax : tuple of float or None, optional
+        Colour scale maximum for each variable. Default is taken from the largest min or max value of the variable to create a symetrical colorbar.
     figsize : tuple of float, optional
         Figure size in inches.
 
@@ -111,8 +111,10 @@ def plot_hovmoller(
             max_value = ds[var].max()
             min_value = ds[var].min()
             if abs(max_value) >= abs(min_value):
-                min_value = max_value
-            min_max[var] = (min_value, max_value)
+                limit = max_value
+            else:
+                limit = min_value
+            min_max[var] = (-limit, limit)
 
     for ax, (var, label) in zip(axes, components, strict=True):
         data = ds[var].values.T  # (depth, time)
