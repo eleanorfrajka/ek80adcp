@@ -181,6 +181,8 @@ def plot_track_quiver(
             f"{depth_idx} has no valid value, must be either int or 'mean'!"
         )
 
+    margin = 0.05
+
     lon = ds["lon"].values
     lat = ds["lat"].values
 
@@ -199,9 +201,12 @@ def plot_track_quiver(
         v[::step],
         angles="xy",
         scale_units="xy",
-        scale=1,
+        scale=10,
         width=0.003,
     )
+    ax.set_xlim(lon.min() - margin, lon.max() + margin)
+    ax.set_ylim(lat.min() - margin, lat.max() + margin)
+
     ax.set_title(title)
     ax.set_xlabel("Longitude (°E)")
     ax.set_ylabel("Latitude (°N)")
