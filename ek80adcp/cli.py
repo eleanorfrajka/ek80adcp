@@ -34,7 +34,7 @@ def _find_nc_files(paths: list[str], prefix: str | None) -> list[Path]:
     for p in paths:
         path = Path(p)
         if prefix is not None:
-            candidates = sorted(path.glob("{prefix}*.nc")) if path.is_dir() else [path]
+            candidates = sorted(path.glob(f"{prefix}*.nc")) if path.is_dir() else [path]
         else:
             candidates = sorted(path.glob("*.nc")) if path.is_dir() else [path]
         for f in candidates:
@@ -308,12 +308,12 @@ def cmd_extract(args: argparse.Namespace) -> int:
             n_done += 1
         except Exception as exc:
             result = {
-                "input": f,
-                "output": out,
+                "input": str(f),
+                "output": str(out),
                 "n_time": "",
                 "n_depth": "",
                 "processed_at": datetime.now(UTC).isoformat(),
-                "Exception": exc,
+                "Exception": str(exc),
             }
             manifest["files"].append(result)
             _save_manifest(manifest_path, manifest)
