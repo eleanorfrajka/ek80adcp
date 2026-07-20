@@ -15,7 +15,7 @@ from ek80adcp.read_ek80 import read_ek80
 _MANIFEST_NAME = "manifest.json"
 
 
-def _find_nc_files(paths: list[str]) -> list[Path]:
+def _find_nc_files(paths: list[str], prefix: str | None) -> list[Path]:
     """Resolve input paths (files or directories) to non-empty .nc files.
 
     Parameters
@@ -33,7 +33,10 @@ def _find_nc_files(paths: list[str]) -> list[Path]:
     files: list[Path] = []
     for p in paths:
         path = Path(p)
-        candidates = sorted(path.glob("*.nc")) if path.is_dir() else [path]
+        if prefix is not None:
+            candidates = sorted(path.glob("{prefix}*.nc")) if path.is_dir() else [path]
+        else:
+            candidates = sorted(path.glob("*.nc")) if path.is_dir() else [path]
         for f in candidates:
             if f in seen or f.suffix.lower() != ".nc":
                 continue
@@ -265,7 +268,12 @@ def cmd_extract(args: argparse.Namespace) -> int:
     """
     logger.disable_logging()
 
-    files = _find_nc_files(args.input)
+    if args.prefix:
+        prefix = args.prefix
+    else:
+        prefix = None
+
+    files = _find_nc_files(args.input, prefix)
     if not files:
         print("ek80adcp extract: no .nc files found.", file=sys.stderr)
         return 1
@@ -588,6 +596,13 @@ def main() -> None:
         required=True,
         metavar="DIR",
         help="Directory for output files (created if absent).",
+    )
+    ext.add_argument(
+        "-p",
+        "--prefix",
+        type=str,
+        metavar="PREFIX",
+        help="Prefix string to filter filenames",
     )
     ext.add_argument(
         "--depth-max",
