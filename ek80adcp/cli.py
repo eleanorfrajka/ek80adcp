@@ -299,6 +299,16 @@ def cmd_extract(args: argparse.Namespace) -> int:
             print(f"time={result['n_time']}  depth={result['n_depth']}{suffix}")
             n_done += 1
         except Exception as exc:
+            result = {
+                "input": f,
+                "output": out,
+                "n_time": "",
+                "n_depth": "",
+                "processed_at": datetime.now(UTC).isoformat(),
+                "Exception": exc,
+            }
+            manifest["files"].append(result)
+            _save_manifest(manifest_path, manifest)
             print(f"\nERROR: {exc}", file=sys.stderr)
             n_err += 1
 
