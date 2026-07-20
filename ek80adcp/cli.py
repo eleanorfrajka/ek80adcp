@@ -15,7 +15,7 @@ from ek80adcp.read_ek80 import read_ek80
 _MANIFEST_NAME = "manifest.json"
 
 
-def _find_nc_files(paths: list[str], prefix: str | None) -> list[Path]:
+def _find_nc_files(paths: list[str], prefix=None) -> list[Path]:
     """Resolve input paths (files or directories) to non-empty .nc files.
 
     Parameters
@@ -268,12 +268,8 @@ def cmd_extract(args: argparse.Namespace) -> int:
     """
     logger.disable_logging()
 
-    if args.prefix:
-        prefix = args.prefix
-    else:
-        prefix = None
+    files = _find_nc_files(args.input, args.prefix)
 
-    files = _find_nc_files(args.input, prefix)
     if not files:
         print("ek80adcp extract: no .nc files found.", file=sys.stderr)
         return 1
@@ -465,7 +461,8 @@ def cmd_concat(args: argparse.Namespace) -> int:
     """
     logger.disable_logging()
 
-    files = _find_nc_files(args.input)
+    files = _find_nc_files(args.input, args.prefix)
+
     output_path = Path(args.output)
     files = [f for f in files if f != output_path]
 
@@ -600,7 +597,6 @@ def main() -> None:
     ext.add_argument(
         "-p",
         "--prefix",
-        type=str,
         metavar="PREFIX",
         help="Prefix string to filter filenames",
     )
@@ -671,6 +667,12 @@ def main() -> None:
         help=(
             "Output file path (without --by-day) or output directory (with --by-day)."
         ),
+    )
+    cat.add_argument(
+        "-p",
+        "--prefix",
+        metavar="PREFIX",
+        help="Prefix string to filter filenames",
     )
     cat.add_argument(
         "--by-day",
