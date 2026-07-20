@@ -76,7 +76,7 @@ output directory recording what was processed and with what settings.
 
 ---
 
-### Step 2 — Concatenate by day (one NetCDF per calendar day)
+### Step 2 — Concatenate by day (one NetCDF per calendar day) or by time range
 
 Groups the extracted files by the `D{YYYYMMDD}` token in their names and
 writes one combined file per day, named `{prefix}-D{YYYYMMDD}.nc`.
@@ -95,6 +95,26 @@ Options:
 | `FILE_OR_DIR` | Extracted `.nc` files, or a directory of them |
 | `-o DIR` | Output directory for daily files |
 | `--by-day` | Group by date and write one file per day |
+| `--plot` | Save a Hovmöller PNG for each daily file |
+
+---
+
+Alternatively groups the files by a given time range and concatenates them based on a range in the format `D{YYYYMMDD}-T{HHMMSS}--D{YYYYMMDD}-T{HHMMSS}` with a start and end date. The concatenated file is named with the prefix and this time range.
+
+```bash
+ek80adcp concat /path/to/out/ \
+    -o /path/to/time/range/ \
+    --by-time-range D20260712-T123401--D20260714-T000000 \
+    --plot
+```
+
+Options:
+
+| Flag | Description |
+|---|---|
+| `FILE_OR_DIR` | Extracted `.nc` files, or a directory of them |
+| `-o DIR` | Output directory for daily files |
+| `--by-time-range TIME-RANGE` | Group by time range and writes into one file |
 | `--plot` | Save a Hovmöller PNG for each daily file |
 
 ---

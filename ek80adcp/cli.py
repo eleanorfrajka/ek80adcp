@@ -671,7 +671,7 @@ def main() -> None:
         metavar="TIME-RANGE",
         help=(
             "Group input files by time range and write as one NetCDF file."
-            "Time range must be specified as a string e.g.: 'DYYYYMMDD-THHMMSS--DYYYYMMDD-THHMMSS.'"
+            "Time range must be specified as a string e.g.: 'D{YYYYMMDD}-{THHMMSS}--{DYYYYMMDD}-{THHMMSS}.'"
         ),
     )
     cat.add_argument(
