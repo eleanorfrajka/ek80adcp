@@ -67,6 +67,7 @@ def plot_hovmoller(
     vmin: tuple[float, float, float] | None = None,
     vmax: tuple[float, float, float] | None = None,
     figsize: tuple[float, float] = (15, 18),
+    depth_max: int | None = None,
 ) -> tuple[Any, Any]:
     """Plot depth-time Hovmoller diagrams for vx, vy, and vz.
 
@@ -80,6 +81,8 @@ def plot_hovmoller(
         Colour scale maximum for each variable. Default is taken from the largest min or max value of the variable to create a symetrical colorbar.
     figsize : tuple of float, optional
         Figure size in inches.
+    depth_max : int or None, optional
+        Maximum depth limit in m of Hovmoller plot. Default is None
 
     Returns
     -------
@@ -129,7 +132,10 @@ def plot_hovmoller(
         )
         ax.set_title(label)
         ax.set_ylabel("Depth (m)")
-        ax.set_ylim(depths[-1], depths[0])
+        if depth_max is None:
+            ax.set_ylim(depths[-1], depths[0])
+        else:
+            ax.set_ylim(depth_max, depths[0])
         cbar = fig.colorbar(img, ax=ax, pad=0.03)
         cbar.set_label("m s⁻¹")
         ax.xaxis_date()
