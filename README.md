@@ -49,11 +49,12 @@ depth bins at 2.5 cm vertical spacing (roughly 14–800 m depth range).
 
 Reads each raw file, subsets to a maximum depth, resamples in time, and
 writes a compact NetCDF. Processing parameters are recorded in the `history`
-attribute. Use `--plot` to save a Hovmöller PNG alongside each file.
+attribute. Use `-p` to filter by a filename prefix (such as the cruise name) or `--plot` to save a Hovmöller PNG alongside each file.
 
 ```bash
 ek80adcp extract /path/to/raw/ \
     -o /path/to/out/ \
+    -p DSMIXSEDII \
     --depth-max 800 \
     --time-bin 60s \
     --plot
@@ -65,6 +66,7 @@ Options:
 |---|---|
 | `FILE_OR_DIR` | One or more raw `.nc` files, or a directory of them |
 | `-o DIR` | Output directory (created if absent) |
+| `-p PREFIX` | Prefix which is expected at the beginning of the filename |
 | `--depth-max M` | Drop depth bins below M metres (e.g. `800`) |
 | `--time-bin OFFSET` | Resample to this interval, e.g. `60s`, `5min` (default: native 2 s) |
 | `--method mean\|median` | Averaging method when `--time-bin` is set (default: `mean`) |
@@ -72,7 +74,7 @@ Options:
 | `--skip-existing` | Skip files whose output already exists (safe to re-run) |
 
 Output names match the input names; a `manifest.json` is written to the
-output directory recording what was processed and with what settings.
+output directory recording what was processed and with what settings. It also records errors and the files skipped due to that.
 
 ---
 
